@@ -3,28 +3,43 @@ import requests
 from datetime import datetime, timedelta
 
 
-def find_cheapest_ticket(dep, arr, dep_date, arr_date):
+def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
     """Finds the cheapest train ticket for a specified journey.
       
       Arguments:
-          dep {str} -- Departing from
-          arr {str} -- Arriving at
-          dep_date {datetime} -- Departure Date/Time (intended)
-          arr_date {datetime} -- Arrival Date/Time (intended)
+          dep_from {str} -- Departing from
+          dep_to {str} -- Departing to
+          dep_date {dict} -- Departure date and whether it's arrive before or depart after
+          ret_date {dict} -- Return date and whether it's arrive before or depart after
       """
 
-    BASE_URL = "http://ojp.nationalrail.co.uk"
+    BASE_URL = "http://ojp.nationalrail.co.uk/service/timesandfares"
 
     # Format the dates and times
-    departure_date = dep_date.strftime("%d%m%y")
-    departure_time = dep_date.strftime("%H%M")
-    arrival_date = None
-    arrival_time = None
+    departure_date = dep_date['date'].strftime("%d%m%y")
+    departure_time = dep_date['date'].strftime("%H%M")
+    
+    return_date = ret_date['date'].strftime("%d%m%y")
+    return_time = ret_date['date'].strftime("%H%M")
 
     # Create new URL
-    final_url = "{}/service/timesandfares/{}/{}/{}/{}/dep".format(
-        BASE_URL, dep, arr, departure_date, departure_time
-    )
+    # final_url = "{}/service/timesandfares/{}/{}/{}/{}/dep".format(
+    #     BASE_URL, dep_from, dep_to, departure_date, departure_time
+    # )
+    final_url = BASE_URL
+    
+    # Add the departing from & departing to to URL
+    final_url += '/{}/{}'.format(dep_from, dep_to)
+    
+    # Add the departing date/time to the url
+    final_url += '/{}/{}/{}'.format(departure_date, departure_time, dep_date['condition'])
+    
+     # Optionally add the return date/time to the url
+    if ret_date:
+        final_url += '/{}/{}/{}'.format(return_date, return_time, ret_date['condition'])
+    
+    print(final_url)
+    
     html = requests.get(final_url).text
 
     # Set up the scraping
@@ -34,10 +49,9 @@ def find_cheapest_ticket(dep, arr, dep_date, arr_date):
     output_from = soup.select_one('td.from').next_element
     output_dep_time = soup.select_one('td.dep').next_element
     output_arr_time = soup.select_one('td.arr').next_element
-    output_price = soup.select_one('label.opsingle').next_element.next_element.next_element
+    # output_price = soup.select_one('label.opsingle').next_element.next_element.next_element if not ret_date else soup.select_one('label.opreturnselected').next_element.next_element.next_element
 
-    print(
-        soup.select_one('label.opsingle', text=True))
+    print(output_from)
 
     return {
         'departure_date': None,
@@ -45,9 +59,9 @@ def find_cheapest_ticket(dep, arr, dep_date, arr_date):
         'arrival_time': output_arr_time,
         'from': output_from,
         'to': None,
-        'price': output_price
+        # 'price': output_price
     }
 
 find_cheapest_ticket(
-        "Norwich", "Portsmouth", datetime(2019, 11, 20), datetime(2019, 11, 21)
+        "Norwich", "London", {'date':datetime(2019, 11, 26), 'condition': 'dep'}, {'date':datetime(2019, 11, 27), 'condition': 'dep'}
     )
