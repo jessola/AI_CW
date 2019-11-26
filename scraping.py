@@ -1,6 +1,16 @@
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
-from datetime import datetime, timedelta
+import re
+
+def format_output(name):
+    """Strips newlines and other extraneous artefacts from the output
+    
+    Arguments:
+        name {str} -- Raw HTML output.
+    """
+    
+    return re.sub('(\s{2,})|\[|\]', '', name)
 
 
 def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
@@ -23,9 +33,6 @@ def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
     return_time = ret_date['date'].strftime("%H%M")
 
     # Create new URL
-    # final_url = "{}/service/timesandfares/{}/{}/{}/{}/dep".format(
-    #     BASE_URL, dep_from, dep_to, departure_date, departure_time
-    # )
     final_url = BASE_URL
     
     # Add the departing from & departing to to URL
@@ -38,8 +45,6 @@ def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
     if ret_date:
         final_url += '/{}/{}/{}'.format(return_date, return_time, ret_date['condition'])
     
-    print(final_url)
-    
     html = requests.get(final_url).text
 
     # Set up the scraping
@@ -51,17 +56,17 @@ def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
     output_arr_time = soup.select_one('td.arr').next_element
     # output_price = soup.select_one('label.opsingle').next_element.next_element.next_element if not ret_date else soup.select_one('label.opreturnselected').next_element.next_element.next_element
 
-    print(output_from)
+    print(soup.select('.opreturnselected'))
 
     return {
         'departure_date': None,
-        'departure_time': output_dep_time,
-        'arrival_time': output_arr_time,
-        'from': output_from,
-        'to': None,
+        'departure_time': format_output(output_dep_time),
+        'arrival_time': format_output(output_arr_time),
+        'departing_from': format_output(output_from),
+        'departing_to': None,
         # 'price': output_price
     }
 
-find_cheapest_ticket(
-        "Norwich", "London", {'date':datetime(2019, 11, 26), 'condition': 'dep'}, {'date':datetime(2019, 11, 27), 'condition': 'dep'}
-    )
+print(find_cheapest_ticket(
+        "hml", "London", {'date':datetime(2019, 11, 26), 'condition': 'dep'}, {'date':datetime(2019, 11, 27), 'condition': 'dep'}
+    ))
