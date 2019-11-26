@@ -4,6 +4,7 @@ from .ask_departure_condition import ask_departure_condition
 from .ask_departure_time import ask_departure_time
 from .ask_num_adults import ask_num_adults
 from .ask_num_children import ask_num_children
+from .ask_returning import ask_returning
 from .ask_travelling_alone import ask_travelling_alone
 
 
@@ -34,6 +35,9 @@ def ask_question(topic):
 
     elif topic == "num_children":
         question = ask_num_children()
+
+    elif topic == "returning":
+        question = ask_returning()
 
     elif topic == "travelling_alone":
         question = ask_travelling_alone()

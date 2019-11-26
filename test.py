@@ -13,6 +13,7 @@ class Conversation(KnowledgeEngine):
         "departing_to",
         "travelling_alone",
         "departure_time",
+        "returning"
     ]
     shuffle(remaining_questions)
 
@@ -61,6 +62,16 @@ class Conversation(KnowledgeEngine):
                     self.remaining_questions.insert(0,'num_adults')
 
                 self.declare(Fact(travelling_alone=travelling_alone))
+
+          elif self.current_question == 'returning':
+                # For testing purposes, this just checks if first letter is 'y'
+                returning = response.lower()[0] == 'y'
+
+                # if not returning:
+                #     self.remaining_questions.insert(0, 'num_children')
+                #     self.remaining_questions.insert(0,'num_adults')
+
+                self.declare(Fact(returning=returning))
                 
           elif self.current_question == 'departure_time':
                 # This is a very basic implementation, definitely not final
@@ -99,8 +110,13 @@ class Conversation(KnowledgeEngine):
         
      # 'Departure Condition' Specified
     @Rule(Fact(departure_condition=MATCH.dep_condition))
-    def departure_time_answered(self, dep_condition):
+    def departure_condition_answered(self, dep_condition):
         self.remaining_questions.remove('departure_condition')
+
+     # 'returning' Specified
+    @Rule(Fact(returning=W()))
+    def returning_answered(self):
+        self.remaining_questions.remove('returning')
 
     # 'Travelling Alone' Specified
     @Rule(Fact(travelling_alone=W()))
@@ -122,10 +138,11 @@ class Conversation(KnowledgeEngine):
         Fact(departing_from=MATCH.dep_from) &
         Fact(departing_to=MATCH.dep_to) &
         Fact(departure_time=MATCH.dep_time) &
-        Fact(departure_condition=MATCH.dep_condition)
+        Fact(departure_condition=MATCH.dep_condition) &
+        Fact(returning=MATCH.returning)
 )
-    def find_ticket(self, dep_from, dep_to, dep_time, dep_condition):
-        print(find_cheapest_ticket(dep_from, dep_to, {'condition': dep_condition, 'date':dep_time}))
+    def find_ticket(self, dep_from, dep_to, dep_time, dep_condition, returning):
+        print(find_cheapest_ticket(dep_from, dep_to, {'condition': dep_condition, 'date':dep_time},{'condition': 'dep', 'date':datetime(2019,12,22)} if returning else None))
 
 
 c = Conversation()
