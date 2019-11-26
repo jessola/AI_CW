@@ -11,8 +11,8 @@ class Conversation(KnowledgeEngine):
     remaining_questions = [
         "departing_from",
         "departing_to",
-        "travelling_alone"
-        # "departure_time",
+        "travelling_alone",
+        "departure_time",
     ]
     shuffle(remaining_questions)
 
@@ -61,6 +61,13 @@ class Conversation(KnowledgeEngine):
                     self.remaining_questions.insert(0,'num_adults')
 
                 self.declare(Fact(travelling_alone=travelling_alone))
+                
+          elif self.current_question == 'departure_time':
+                # This is a very basic implementation, definitely not final
+                dep_time = datetime.strptime('19-'+ response, '%y-%m-%d %H:%M')
+                print(dep_time)
+                
+                self.declare(Fact(departure_time=dep_time))  
 
           elif self.current_question == 'num_adults':
                 self.declare(Fact(num_adults=int(response)))
@@ -79,6 +86,13 @@ class Conversation(KnowledgeEngine):
     @Rule(Fact(departing_to=MATCH.dep_to))
     def departing_to_answered(self):
         self.remaining_questions.remove('departing_to')
+        
+    # 'Departure Time' Specified
+    @Rule(Fact(departure_time=MATCH.dep_time))
+    def departure_time_answered(self, dep_time):
+        print(dep_time)
+        
+        self.remaining_questions.remove('departure_time')
 
     # 'Travelling Alone' Specified
     @Rule(Fact(travelling_alone=W()))
@@ -96,9 +110,9 @@ class Conversation(KnowledgeEngine):
         self.remaining_questions.remove('num_children')
         
     # Ready to find ticket
-    @Rule(Fact(departing_from=MATCH.dep_from) & Fact(departing_to=MATCH.dep_to))
-    def find_ticket(self, dep_from, dep_to):
-        print(find_cheapest_ticket(dep_from, dep_to))
+    @Rule(Fact(departing_from=MATCH.dep_from) & Fact(departing_to=MATCH.dep_to) & Fact(departure_time=MATCH.dep_time))
+    def find_ticket(self, dep_from, dep_to, dep_time):
+        print(find_cheapest_ticket(dep_from, dep_to, {'condition': 'dep', 'date':dep_time}))
 
 
 c = Conversation()
