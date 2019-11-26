@@ -1,7 +1,9 @@
 from experta import *
 from random import choice, shuffle
+from datetime import datetime
 
 from questions import ask_question
+from scraping import find_cheapest_ticket
 
 class Conversation(KnowledgeEngine):
     current_question = "departing_from"
@@ -92,6 +94,11 @@ class Conversation(KnowledgeEngine):
     @Rule(Fact(num_children=W()))
     def num_children_answered(self):
         self.remaining_questions.remove('num_children')
+        
+    # Ready to find ticket
+    @Rule(Fact(departing_from=MATCH.dep_from) & Fact(departing_to=MATCH.dep_to))
+    def find_ticket(self, dep_from, dep_to):
+        print(find_cheapest_ticket(dep_from, dep_to))
 
 
 c = Conversation()

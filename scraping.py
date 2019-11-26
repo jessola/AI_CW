@@ -13,7 +13,7 @@ def format_output(name):
     return re.sub('(\s{2,})|\[|\]', '', name)
 
 
-def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
+def find_cheapest_ticket(dep_from, dep_to, dep_date={'condition':'dep', 'date':datetime.now()}, ret_date=None):
     """Finds the cheapest train ticket for a specified journey.
       
       Arguments:
@@ -73,6 +73,6 @@ def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
     }
     
 
-print(find_cheapest_ticket(
-        "norwich", "stevenage", {'date':datetime(2019, 12, 12), 'condition': 'dep'}, {'date':datetime(2019, 12, 13), 'condition': 'arr'}
-    ))
+# print(find_cheapest_ticket(
+#         "norwich", "stevenage", {'date':datetime(2019, 12, 12), 'condition': 'dep'}, {'date':datetime(2019, 12, 13), 'condition': 'arr'}
+#     ))
