@@ -93,14 +93,14 @@ class Conversation(KnowledgeEngine):
     @Rule(Fact(departure_time=MATCH.dep_time))
     def departure_time_answered(self, dep_time):
         # Prompt the user to specify whether it's arrive before or depart after
-        # self.remaining_questions.insert(0, 'departure_condition')
+        self.remaining_questions.insert(0, 'departure_condition')
         
         self.remaining_questions.remove('departure_time')
         
-    #  # 'Departure Condition' Specified
-    # @Rule(Fact(departure_condition=MATCH.dep_condition))
-    # def departure_time_answered(self, dep_condition):
-    #     self.remaining_questions.remove('departure_condition')
+     # 'Departure Condition' Specified
+    @Rule(Fact(departure_condition=MATCH.dep_condition))
+    def departure_time_answered(self, dep_condition):
+        self.remaining_questions.remove('departure_condition')
 
     # 'Travelling Alone' Specified
     @Rule(Fact(travelling_alone=W()))
@@ -120,12 +120,12 @@ class Conversation(KnowledgeEngine):
     # Ready to find ticket
     @Rule(
         Fact(departing_from=MATCH.dep_from) &
-         Fact(departing_to=MATCH.dep_to) &
-         Fact(departure_time=MATCH.dep_time)
-        #  Fact(departure_condition=MATCH.dep_condition)
-    )
-    def find_ticket(self, dep_from, dep_to, dep_time):
-        print(find_cheapest_ticket(dep_from, dep_to, {'condition': 'dep', 'date':dep_time}))
+        Fact(departing_to=MATCH.dep_to) &
+        Fact(departure_time=MATCH.dep_time) &
+        Fact(departure_condition=MATCH.dep_condition)
+)
+    def find_ticket(self, dep_from, dep_to, dep_time, dep_condition):
+        print(find_cheapest_ticket(dep_from, dep_to, {'condition': dep_condition, 'date':dep_time}))
 
 
 c = Conversation()
