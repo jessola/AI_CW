@@ -56,7 +56,12 @@ def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
     output_dep_to = soup.select_one('td.to').next_element.next_element.next_element.next_element
     output_dep_time = soup.select_one('td.dep').next_element
     output_arr_time = soup.select_one('td.arr').next_element
-    # output_price = soup.select_one('label.opsingle').next_element.next_element.next_element if not ret_date else soup.select_one('label.opreturnselected').next_element.next_element.next_element
+    
+    ## Get the single or return price 
+    if ret_date:
+        output_price = (soup.select_one('label.opreturn span.label-text').next_element)
+    else:
+        output_price = soup.select_one('label.opsingle').next_element.next_element.next_element
 
     return {
         'departure_date': None,
@@ -64,9 +69,10 @@ def find_cheapest_ticket(dep_from, dep_to, dep_date, ret_date=None):
         'arrival_time': format_output(output_arr_time),
         'departing_from': format_output(output_dep_from),
         'departing_to': format_output(output_dep_to),
-        # 'price': output_price
+        'price': format_output(output_price)[1:] # remove the currency symbol
     }
+    
 
 print(find_cheapest_ticket(
-        "norwich", "stevenage", {'date':datetime(2019, 12, 12), 'condition': 'dep'}
+        "norwich", "stevenage", {'date':datetime(2019, 12, 12), 'condition': 'dep'}, {'date':datetime(2019, 12, 13), 'condition': 'arr'}
     ))
