@@ -2,12 +2,14 @@ from experta import *
 from random import choice, shuffle
 from datetime import datetime
 
-from questions import ask_question
-from scraping import find_cheapest_ticket
-from railway.station import get_stations
+from questions.ask_question import ask_question
+from tickets.scraping import find_cheapest_ticket
+
+from .departure import DepartureRules
+from .passengers import PassengerRules
 
 
-class Conversation(KnowledgeEngine):
+class Conversation(DepartureRules, PassengerRules, KnowledgeEngine):
     current_question = "departing_from"
 
     remaining_questions = [
@@ -69,10 +71,6 @@ class Conversation(KnowledgeEngine):
                 # For testing purposes, this just checks if first letter is 'y'
                 returning = response.lower()[0] == "y"
 
-                # if not returning:
-                #     self.remaining_questions.insert(0, 'num_children')
-                #     self.remaining_questions.insert(0,'num_adults')
-
                 self.declare(Fact(returning=returning))
 
             elif self.current_question == "departure_time":
@@ -113,76 +111,17 @@ class Conversation(KnowledgeEngine):
                 )
             )
         except:
-            print('There are no tickets available based on your specifications')
-            
+            print("There are no tickets available based on your specifications")
+
             # Get rid of some facts (Handle this with rules later)
             self.retract(f1)
-            self.remaining_questions.append('departing_from')
-            
+            self.remaining_questions.append("departing_from")
+
             self.retract(f2)
-            self.remaining_questions.append('departing_to')
-
-    # 'Departing From' Specified
-    @Rule(AS.f << Fact(departing_from=MATCH.dep_from))
-    def departing_from_answered(self, f, dep_from):
-        if len(get_stations(dep_from)) < 1:
-            # temporary validation message
-            print("There are no stations called {}".format(dep_from))
-
-            self.retract(f)
-        else:
-            self.remaining_questions.remove("departing_from")
-
-    # 'Departing To' Specified
-    @Rule(AS.f << Fact(departing_to=MATCH.dep_to))
-    def departing_to_answered(self, f, dep_to):
-        if len(get_stations(dep_to)) < 1:
-            # temporary validation message
-            print("There are no stations called {}".format(dep_to))
-
-            self.retract(f)
-        else:
-            self.remaining_questions.remove("departing_to")
-
-    # 'Departure Time' Specified
-    @Rule(Fact(departure_time=MATCH.dep_time))
-    def departure_time_answered(self, dep_time):
-        # Prompt the user to specify whether it's arrive before or depart after
-        self.remaining_questions.insert(0, "departure_condition")
-
-        self.remaining_questions.remove("departure_time")
-
-    # 'Departure Condition' Specified
-    @Rule(Fact(departure_condition=MATCH.dep_condition))
-    def departure_condition_answered(self, dep_condition):
-        self.remaining_questions.remove("departure_condition")
+            self.remaining_questions.append("departing_to")
 
     # 'returning' Specified
     @Rule(Fact(returning=W()))
     def returning_answered(self):
         self.remaining_questions.remove("returning")
-
-    # 'Travelling Alone' Specified
-    @Rule(Fact(travelling_alone=W()))
-    def travelling_alone_true(self):
-        self.remaining_questions.remove("travelling_alone")
-
-    # 'Number of Adults' Specified
-    @Rule(Fact(num_adults=W()))
-    def num_adults_answered(self):
-        self.remaining_questions.remove("num_adults")
-
-    # 'Number of Children' Specified
-    @Rule(Fact(num_children=W()))
-    def num_children_answered(self):
-        self.remaining_questions.remove("num_children")
-
-c = Conversation()
-c.reset()
-c.run()
-
-while c.requires_more_info:
-    response = input(c.prompt_user() + "\n")
-
-    c.evaluate_response(response)
 
