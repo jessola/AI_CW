@@ -2,11 +2,14 @@ from experta import *
 from random import choice, shuffle
 from datetime import datetime
 
-from questions import ask_question
-from scraping import find_cheapest_ticket
+from questions.ask_question import ask_question
+from tickets.scraping import find_cheapest_ticket
+
+from .departure import DepartureRules
+from .passengers import PassengerRules
 
 
-class Conversation(KnowledgeEngine):
+class Conversation(DepartureRules, PassengerRules, KnowledgeEngine):
     current_question = "departing_from"
 
     remaining_questions = [
@@ -36,7 +39,7 @@ class Conversation(KnowledgeEngine):
 
         self.current_question = self.remaining_questions[0]
 
-        return ask_question(self.current_question)
+        return ask_question(self.current_question) or self.current_question
 
     def evaluate_response(self, response):
         """Extracts relevant information from user's response to a prompt.
@@ -68,10 +71,6 @@ class Conversation(KnowledgeEngine):
                 # For testing purposes, this just checks if first letter is 'y'
                 returning = response.lower()[0] == "y"
 
-                # if not returning:
-                #     self.remaining_questions.insert(0, 'num_children')
-                #     self.remaining_questions.insert(0,'num_adults')
-
                 self.declare(Fact(returning=returning))
 
             elif self.current_question == "departure_time":
@@ -91,76 +90,38 @@ class Conversation(KnowledgeEngine):
 
             self.run()
 
-    # 'Departing From' Specified
-    @Rule(Fact(departing_from=MATCH.dep_from))
-    def departing_from_answered(self, dep_from):
-        self.remaining_questions.remove("departing_from")
+    # Ready to find ticket
+    @Rule(
+        AS.f1 << Fact(departing_from=MATCH.dep_from)
+        & AS.f2 << Fact(departing_to=MATCH.dep_to)
+        & Fact(departure_time=MATCH.dep_time)
+        & Fact(departure_condition=MATCH.dep_condition)
+        & Fact(returning=MATCH.returning)
+    )
+    def find_ticket(self, f1, f2, dep_from, dep_to, dep_time, dep_condition, returning):
+        try:
+            print(
+                find_cheapest_ticket(
+                    dep_from,
+                    dep_to,
+                    {"condition": dep_condition, "date": dep_time},
+                    {"condition": "dep", "date": datetime(2019, 12, 22)}
+                    if returning
+                    else None,
+                )
+            )
+        except:
+            print("There are no tickets available based on your specifications")
 
-    # 'Departing To' Specified
-    @Rule(Fact(departing_to=MATCH.dep_to))
-    def departing_to_answered(self):
-        self.remaining_questions.remove("departing_to")
+            # Get rid of some facts (Handle this with rules later)
+            self.retract(f1)
+            self.remaining_questions.append("departing_from")
 
-    # 'Departure Time' Specified
-    @Rule(Fact(departure_time=MATCH.dep_time))
-    def departure_time_answered(self, dep_time):
-        # Prompt the user to specify whether it's arrive before or depart after
-        self.remaining_questions.insert(0, "departure_condition")
-
-        self.remaining_questions.remove("departure_time")
-
-    # 'Departure Condition' Specified
-    @Rule(Fact(departure_condition=MATCH.dep_condition))
-    def departure_condition_answered(self, dep_condition):
-        self.remaining_questions.remove("departure_condition")
+            self.retract(f2)
+            self.remaining_questions.append("departing_to")
 
     # 'returning' Specified
     @Rule(Fact(returning=W()))
     def returning_answered(self):
         self.remaining_questions.remove("returning")
-
-    # 'Travelling Alone' Specified
-    @Rule(Fact(travelling_alone=W()))
-    def travelling_alone_true(self):
-        self.remaining_questions.remove("travelling_alone")
-
-    # 'Number of Adults' Specified
-    @Rule(Fact(num_adults=W()))
-    def num_adults_answered(self):
-        self.remaining_questions.remove("num_adults")
-
-    # 'Number of Children' Specified
-    @Rule(Fact(num_children=W()))
-    def num_children_answered(self):
-        self.remaining_questions.remove("num_children")
-
-    # Ready to find ticket
-    @Rule(
-        Fact(departing_from=MATCH.dep_from)
-        & Fact(departing_to=MATCH.dep_to)
-        & Fact(departure_time=MATCH.dep_time)
-        & Fact(departure_condition=MATCH.dep_condition)
-        & Fact(returning=MATCH.returning)
-    )
-    def find_ticket(self, dep_from, dep_to, dep_time, dep_condition, returning):
-        print(
-            find_cheapest_ticket(
-                dep_from,
-                dep_to,
-                {"condition": dep_condition, "date": dep_time},
-                {"condition": "dep", "date": datetime(2019, 12, 22)}
-                if returning
-                else None,
-            )
-        )
-
-
-c = Conversation()
-c.reset()
-c.run()
-
-while c.requires_more_info:
-    response = input(c.prompt_user() + "\n")
-
-    c.evaluate_response(response)
 
