@@ -2,9 +2,7 @@ from experta import *
 from random import choice, shuffle
 from datetime import datetime
 
-from questions.ask_question import ask_question
-
-# from tickets.scraping import find_cheapest_ticket
+from questions import ask_question
 
 from .departure import DepartureRules
 from .passengers import PassengerRules
@@ -77,6 +75,12 @@ class Conversation(
                 returning = response.lower()[0] == "y"
 
                 self.declare(Fact(returning=returning))
+
+            elif self.current_question == "return_time":
+                # This is a very basic implementation, definitely not final
+                ret_time = datetime.strptime("19-" + response, "%y-%m-%d %H:%M")
+
+                self.declare(Fact(return_time=ret_time))
 
             elif self.current_question == "departure_time":
                 # This is a very basic implementation, definitely not final

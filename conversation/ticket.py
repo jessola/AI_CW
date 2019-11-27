@@ -1,15 +1,21 @@
 from experta import *
+from datetime import datetime
 
 from tickets.scraping import find_cheapest_ticket
 
+
 class TicketRules:
-  # Ready to find ticket
+    # Ready to find ticket
     @Rule(
         AS.f1 << Fact(departing_from=MATCH.dep_from)
         & AS.f2 << Fact(departing_to=MATCH.dep_to)
         & Fact(departure_time=MATCH.dep_time)
         & Fact(departure_condition=MATCH.dep_condition)
-        & Fact(returning=MATCH.returning)
+        # & Fact(returning=MATCH.returning)
+        & (
+            AS.returning << Fact(returning=True) & Fact(return_time=MATCH.ret_time)
+            | AS.returning << Fact(returning=False)
+        )
     )
     def find_ticket(self, f1, f2, dep_from, dep_to, dep_time, dep_condition, returning):
         try:
@@ -19,7 +25,7 @@ class TicketRules:
                     dep_to,
                     {"condition": dep_condition, "date": dep_time},
                     {"condition": "dep", "date": datetime(2019, 12, 22)}
-                    if returning
+                    if returning["returning"]
                     else None,
                 )
             )
