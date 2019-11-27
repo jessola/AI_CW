@@ -13,7 +13,6 @@ def main():
     # print("CHILD:\t", ask_question("num_children"))
     # print("TIME:\t", ask_question("departure_time"))
     question = assert_fact("questions_answered", {"type": "departing_from"})
-    question = assert_fact("questions_answered", {"type": "departing_from"})
 
 
 if __name__ == "__main__":
