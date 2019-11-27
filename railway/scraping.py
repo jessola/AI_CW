@@ -9,7 +9,6 @@ def get_railway_stations():
       {list} -- List of station names as dicts with their name and code.
   """
 
-    stations = []
     URL = "https://web.archive.org/web/20121125233554/http://www.nationalrail.co.uk/stations/codes/"
     html = requests.get(URL).text
     soup = BeautifulSoup(html, "html.parser")
