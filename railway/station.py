@@ -1,6 +1,6 @@
 from mongoengine import *
 
-from scraping import get_railway_stations
+from railway.scraping import get_railway_stations
 
 # Connect to the database
 connect(
