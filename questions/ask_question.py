@@ -39,6 +39,9 @@ def ask_question(topic):
 
     elif topic == "returning":
         question = ask_returning()
+        
+    elif topic == 'return_condition':
+        question = ask_departure_condition()
 
     elif topic == "return_time":
         question = ask_return_time()

@@ -11,22 +11,23 @@ class TicketRules:
         & AS.f2 << Fact(departing_to=MATCH.dep_to)
         & Fact(departure_time=MATCH.dep_time)
         & Fact(departure_condition=MATCH.dep_condition)
-        # & Fact(returning=MATCH.returning)
-        & (
-            AS.returning << Fact(returning=True) & Fact(return_time=MATCH.ret_time)
-            | AS.returning << Fact(returning=False)
-        )
+        & Fact(returning=MATCH.returning)
+        & (Fact(return_time=MATCH.ret_time) | AS.ret_time << Fact(return_time=~W()))
+        # & (
+        #     AS.returning << Fact(returning=True) & Fact(return_time=MATCH.ret_time)
+        #     | AS.returning << Fact(returning=False) & ~Fact(return_time=MATCH.ret_time)
+        # )
     )
-    def find_ticket(self, f1, f2, dep_from, dep_to, dep_time, dep_condition, returning):
+    def find_ticket(
+        self, f1, f2, dep_from, dep_to, dep_time, dep_condition, returning, ret_time
+    ):
         try:
             print(
                 find_cheapest_ticket(
                     dep_from,
                     dep_to,
                     {"condition": dep_condition, "date": dep_time},
-                    {"condition": "dep", "date": datetime(2019, 12, 22)}
-                    if returning["returning"]
-                    else None,
+                    {"condition": "dep", "date": ret_time} if returning else None,
                 )
             )
         except:

@@ -2,8 +2,9 @@ from experta import *
 
 from railway.station import get_stations
 
+
 class DepartureRules:
-  # 'Departing From' Specified
+    # 'Departing From' Specified
     @Rule(AS.f << Fact(departing_from=MATCH.dep_from))
     def departing_from_answered(self, f, dep_from):
         if len(get_stations(dep_from)) < 1:
