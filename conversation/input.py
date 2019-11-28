@@ -23,6 +23,7 @@ class InputRules:
         # Extract relevant information from text using NLP
         details = extract_info(text)
         
+        # If there's limited information, assume user only answered one thing.
         if len(details.keys()) < 1:
             if self.current_question == "departing_from":
                 self.declare(Fact(departing_from=text))
