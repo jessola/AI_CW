@@ -1,6 +1,7 @@
 from datetime import datetime
 from experta import *
 
+
 def extract_info(text):
     """This is a dummy method
       
@@ -8,7 +9,12 @@ def extract_info(text):
           text {str} -- Returns a dict, to test more complicated convo flows.
       """
 
-    return {}
+    return {
+        "departing_from": "Norwich",
+        "departing_to": "London Liverpool Street",
+        "departure_time": datetime(2019, 12, 1, 11, 30),
+        "departure_condition": "dep",
+    }
 
 
 class Input(Fact):
@@ -16,13 +22,17 @@ class Input(Fact):
 
 
 class InputRules:
+    count = 0  # Just for test purposes
+
     @Rule(AS.f << Input(MATCH.text))
     def input(self, f, text):
         self.retract(f)
 
+        self.count += 1  # Just for test purposes
+
         # Extract relevant information from text using NLP
-        details = extract_info(text)
-        
+        details = extract_info(text) if self.count == 1 else {}
+
         # If there's limited information, assume user only answered one thing.
         if len(details.keys()) < 1:
             if self.current_question == "departing_from":
@@ -62,6 +72,8 @@ class InputRules:
 
                 self.declare(Fact(departure_time=dep_time))
 
+                self.remaining_questions.insert(0, "departure_condition")
+
             elif self.current_question == "departure_condition":
                 self.declare(Fact(departure_condition=text))
 
@@ -70,3 +82,16 @@ class InputRules:
 
             elif self.current_question == "num_children":
                 self.declare(Fact(num_children=int(text)))
+        else:
+            if "departing_from" in details.keys():
+                self.declare(Fact(departing_from=details["departing_from"]))
+
+            if "departing_to" in details.keys():
+                self.declare(Fact(departing_to=details["departing_to"]))
+
+            if "departure_time" in details.keys():
+                self.declare(Fact(departure_time=details["departure_time"]))
+
+            if "departure_condition" in details.keys():
+                self.declare(Fact(departure_condition=details["departure_condition"]))
+
