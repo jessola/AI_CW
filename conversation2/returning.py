@@ -1,5 +1,7 @@
 from experta import *
 
+from questions import ask_question
+
 from .facts import Question, Confirmed, ReturnTime, Returning, Input
 
 
@@ -7,7 +9,7 @@ class ReturningRules:
     # User has NOT said if they're returning
     @Rule(Question('returning') & ~Returning())
     def ask_returning(self):
-        self.output_question('BOT:\tReturning?\n')
+        self.output_question('BOT:\t{}\n'.format(ask_question('returning')))
 
     # Evaluate the user's response to whether or not they're returning
     @Rule(Question('returning') & AS._input << Input())
@@ -39,7 +41,7 @@ class ReturningRules:
     # No return date specified
     @Rule(Question('return_time') & ~Fact(return_date=W()))
     def ask_return_date(self):
-        self.output_question('BOT:\tReturn Date?\n')
+        self.output_question('BOT:\t{}\n'.format(ask_question('return_time')))
 
     # Return date, i.e. not the time has been specified
     @Rule(

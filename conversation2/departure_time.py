@@ -1,5 +1,7 @@
 from experta import *
 
+from questions import ask_question
+
 from .facts import Question, Confirmed, DepartureTime, Input, DepartingFrom
 
 
@@ -7,7 +9,7 @@ class DepartureTimeRules:
     # No departure date specified
     @Rule(Question('departure_time') & ~Fact(departure_date=W()))
     def ask_departure_date(self):
-        self.output_question('BOT:\tDeparture Date?\n')
+        self.output_question('BOT:\t{}\n'.format(ask_question('departure_time')))
 
     # Departure date, i.e. not the time has been specified
     @Rule(

@@ -1,5 +1,7 @@
 from experta import *
 
+from questions import ask_question
+
 from .facts import Confirmed, Question, DepartingTo, Input
 
 
@@ -7,7 +9,7 @@ class DepartingToRules:
     # Departing to has NOT been specified
     @Rule(Question("departing_to") & ~DepartingTo())
     def ask_departing_to(self):
-        self.output_question("BOT:\tDeparting to?\n")
+        self.output_question("BOT:\t{}\n".format(ask_question("departing_to")))
 
     # Listen to departure
     @Rule(Question("departing_to") & AS._input << Input())
