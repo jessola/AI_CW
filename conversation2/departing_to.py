@@ -1,6 +1,7 @@
 from experta import *
 
 from questions import ask_question
+from railway.station import get_stations
 
 from .facts import Confirmed, Question, DepartingTo, Input
 
@@ -18,14 +19,37 @@ class DepartingToRules:
         self.declare(DepartingTo(_input[0]))
 
     # Departing to specified but not confirmed
-    @Rule(Question("departing_to") & AS.f << DepartingTo(MATCH.dep_to) & ~Confirmed())
+    @Rule(
+        Question("departing_to") & AS.f << DepartingTo(MATCH.dep_to)
+        & ~Confirmed())
     def departing_to_unconfirmed(self, f, dep_to):
-        self.output_statement("BOT:\tSo you want to go to {}.".format(dep_to))
+        stations = get_stations(dep_to)
 
-        self.output_question("BOT:\tIs this correct?\n")
+        if len(stations) < 1:
+            self.output_statement(
+                'BOT:\t"{}" is not a station.'.format(dep_to))
+
+            self.retract(f)
+        elif len(stations) > 1:
+            # List all of the stations they could have meant
+            self.output_statement(
+                'BOT:\tWhen you say "{}", you could mean:\n {}.'.format(
+                    dep_to, '\n'.join([
+                        station.name + ' ' + station.code
+                        for station in stations
+                    ])))
+
+            self.retract(f)
+        else:
+            self.output_statement(
+                "BOT:\tSo you want to go to {}.".format(dep_to))
+
+            self.output_question("BOT:\tIs this correct?\n")
 
     # Departing to either confirmed or rejected
-    @Rule(Question("departing_to") & DepartingTo(MATCH.dep_to) & AS._input << Input())
+    @Rule(
+        Question("departing_to") & DepartingTo(MATCH.dep_to)
+        & AS._input << Input())
     def departing_to_confirmed(self, dep_to, _input):
         self.retract(_input)
 
@@ -38,11 +62,9 @@ class DepartingToRules:
             self.output_statement("BOT:\tI'm not sure what you mean by that.")
 
     # Departing to accepted
-    @Rule(
-        AS.f << Question("departing_to")
-        & AS.f1 << DepartingTo(MATCH.dep_to)
-        & AS.f2 << Confirmed(True)
-    )
+    @Rule(AS.f << Question("departing_to")
+          & AS.f1 << DepartingTo(MATCH.dep_to)
+          & AS.f2 << Confirmed(True))
     def departing_to_accepted(self, f, f1, f2, dep_to):
         self.retract(f)
         # self.retract(f1)
@@ -53,11 +75,10 @@ class DepartingToRules:
 
     # Departing to rejected
     @Rule(
-        Question("departing_to") & AS.f << DepartingTo(W()) & AS.f1 << Confirmed(False)
-    )
+        Question("departing_to") & AS.f << DepartingTo(W())
+        & AS.f1 << Confirmed(False))
     def departing_to_rejected(self, f, f1):
         self.retract(f)
         self.retract(f1)
 
         self.output_statement("BOT:\tOkay, noted.")
-

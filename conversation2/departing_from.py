@@ -1,6 +1,7 @@
 from experta import *
 
 from questions import ask_question
+from railway.station import get_stations
 
 from .facts import Confirmed, Question, DepartingFrom, Input
 
@@ -9,7 +10,8 @@ class DepartingFromRules:
     # Departure has NOT been specified
     @Rule(Question('departing_from') & ~DepartingFrom())
     def ask_departing_from(self):
-        self.output_question('BOT:\t{}\n'.format(ask_question('departing_from')))
+        self.output_question('BOT:\t{}\n'.format(
+            ask_question('departing_from')))
 
     # Listen to departure
     @Rule(Question('departing_from') & AS._input << Input())
@@ -22,10 +24,28 @@ class DepartingFromRules:
         Question('departing_from')
         & AS.f << DepartingFrom(MATCH.dep_from) & ~Confirmed())
     def departing_from_unconfirmed(self, f, dep_from):
-        self.output_statement(
-            'BOT:\tSo you want to leave from {}.'.format(dep_from))
+        stations = get_stations(dep_from)
 
-        self.output_question('BOT:\tIs this correct?\n')
+        if len(stations) < 1:
+            self.output_statement(
+                'BOT:\t"{}" is not a station.'.format(dep_from))
+
+            self.retract(f)
+        elif len(stations) > 1:
+            # List all of the stations they could have meant
+            self.output_statement(
+                'BOT:\tWhen you say "{}", you could mean:\n {}.'.format(
+                    dep_from, '\n'.join([
+                        station.name + ' ' + station.code
+                        for station in stations
+                    ])))
+
+            self.retract(f)
+        else:
+            self.output_statement(
+                'BOT:\tSo you want to leave from {}.'.format(dep_from))
+
+            self.output_question('BOT:\tIs this correct?\n')
 
     # Departing from either confirmed or rejected
     @Rule(
