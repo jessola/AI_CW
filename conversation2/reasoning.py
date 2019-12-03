@@ -31,7 +31,7 @@ class Engine(TicketRules, ConfirmationRules, DepartingFromRules, DepartingToRule
     def start_engine(self):
         yield Started(True)
         yield Topic('start')
-        yield Returning(True)
+        yield Returning(False)
         yield DepartingFrom('Norwich')
         yield Fact(departure_date="12/12")
         yield Fact(departure_time="9:30")
