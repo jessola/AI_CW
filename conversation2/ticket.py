@@ -7,12 +7,13 @@ from .facts import *
 
 
 class TicketRules:
-    # Ready to get ticekt
+    # Ready to get ticket
     @Rule(
         DepartingFrom(MATCH.dep_from)
         & DepartingTo(MATCH.dep_to)
         & DepartureTime(date=MATCH.date, time=MATCH.time)
-        & Returning(MATCH.ret))
+        & Returning(MATCH.ret)
+        & Confirmed(True))
     def find_ticket(self, dep_from, dep_to, date, time, ret):
         self.output_statement("BOT:\tFinding your ticket now.")
 

@@ -84,9 +84,8 @@ class ReturningRules:
         & Fact(return_time=MATCH.ret_time) & AS._input << Input())
     def ret_date_time_confirmed(self, ret_date, ret_time, _input):
         self.retract(_input)
-        print('HERE')
 
-        # Implement smarted logic for yes or no
+        # Implement smarter logic for yes or no
         if _input[0].lower()[0] == 'y':
             self.declare(Confirmed(True))
         elif _input[0].lower()[0] == 'n':
