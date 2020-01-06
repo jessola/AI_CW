@@ -1,4 +1,11 @@
 from .get_journeys import get_all_journeys
+from datetime import datetime
+
+# Arrival/Departure dates are currently just integers, so time differences need
+# to be calculated with that in mind
+to_minutes = lambda num: ((num // 100) * 60) + ((num % 100) % 60)
+
+time_diff = lambda actual, planned: to_minutes(actual) - to_minutes(planned)
 
 
 def at_station(station):
@@ -16,6 +23,8 @@ def at_station(station):
   Arguments:
       station {str} -- The target station.
   """
+    if station == 'NRCH':
+        raise ValueError('Cannot depart TO Norwich under the stipulations.')
 
     # Get all the journeys and reverse them, so it's easier to traverse
     all_journeys = list(get_all_journeys())
@@ -25,18 +34,37 @@ def at_station(station):
     filtered_journeys = []  # The array that's returned in the end
     at_target_station = False  # Keeps track of the current station in the loop
 
-    for journey in all_journeys:
+    # print(2359 - 0000, time_diff(2359, 0000))
+    for j in all_journeys:
         if not at_target_station:
-            if journey['location'] == station and journey['act_d']:
-                at_target_station = True
+            if j['location'] == station and (j['act_a']):
+                day_of_week = j['date'].weekday()
+                is_weekend = 1 if day_of_week > 4 else 0
+                arr_delay = None
+                dep_delay = None
+
+                if j['act_a'] and j['pla_a']:
+                    arr_delay = time_diff(int(j['act_a']), int(j['pla_a']))
+
+                if j['act_d'] and j['pla_d']:
+                    dep_delay = time_diff(int(j['act_d']), int(j['pla_d']))
+
                 filtered_journeys.append([
-                    journey['pla_a'], journey['act_a'], journey['pla_d'],
-                    journey['act_d']
+                    day_of_week,
+                    is_weekend,
+                    arr_delay,
+                    dep_delay,
                 ])
+                at_target_station = True
         else:
-            if journey['act_d']:
-                filtered_journeys[-1].append(journey['location'])
-                at_target_station = False
+            delay_from_prev = None
+            filtered_journeys[-1].insert(0, j['location'])
+
+            if (j['act_d'] and j['pla_d']):
+                delay_from_prev = time_diff(j['act_d'], j['pla_d'])
+            filtered_journeys[-1].insert(3, delay_from_prev)
+
+            at_target_station = False
 
     for j in filtered_journeys:
         print(j)

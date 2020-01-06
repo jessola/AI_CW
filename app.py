@@ -17,4 +17,4 @@ if __name__ == "__main__":
     #               int(journey['act_a']) - int(journey['pla_a']),
     #               'Departure Delay',
     #               int(journey['act_d']) - int(journey['pla_d']))
-    at_station('IPSWICH')
+    at_station('DISS')
