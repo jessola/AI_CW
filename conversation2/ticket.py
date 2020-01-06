@@ -16,9 +16,9 @@ class TicketRules:
     def find_ticket(self, dep_from, dep_to, date, time, ret):
         self.output_statement("BOT:\tFinding your ticket now.")
 
-        # For testing purposes, it's automatically in 2019.
+        # For testing purposes, it's automatically in 2020.
         # Some other things are being assumed as well
-        departure_date = datetime.strptime('{}/19 {}'.format(date, time),
+        departure_date = datetime.strptime('{}/20 {}'.format(date, time),
                                            '%d/%m/%y %H:%M')
         ticket = find_cheapest_ticket(dep_from, dep_to, {
             'condition': 'dep',
