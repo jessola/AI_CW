@@ -44,13 +44,14 @@ def parse_csv(filename, newline='\n'):
                         'id': row[0],
                         'date': datetime.strptime(row[0][:8], '%Y%m%d'),
                         'location': row[1],
-                        'pla_d': fmt_time(row[3]),
                         'pla_a': fmt_time(row[2]),
-                        'act_d': fmt_time(row[18]),
+                        'pla_d': fmt_time(row[3]),
                         'act_a': fmt_time(row[16]),
+                        'act_d': fmt_time(row[18]),
                     })
     except:
-        print('File does not exist.')
+        pass
+        # print('File does not exist.')
 
 
 # a_list = (parse_csv('data/NRCH_LIVST_OD_a51_2019_1_1.csv'))
