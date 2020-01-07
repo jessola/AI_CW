@@ -7,6 +7,10 @@ to_minutes = lambda num: ((num // 100) * 60) + ((num % 100) % 60)
 
 time_diff = lambda actual, planned: to_minutes(actual) - to_minutes(planned)
 
+# Make sure the journey information is valid
+invalid = lambda j: (j[3] and abs(j[3]) >= 300) or (j[4] and abs(j[
+    4]) >= 300) or (j[5] and abs(j[5]) >= 300)
+
 
 def at_station(station):
     """Returns the information about arrivals at and departures from a particular
@@ -70,5 +74,5 @@ def at_station(station):
     #     if j[0] != 'STFD':
     #         print(j)
 
-    return filtered_journeys
+    return [journey for journey in filtered_journeys if not invalid(journey)]
     # return
