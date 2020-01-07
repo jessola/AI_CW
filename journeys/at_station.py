@@ -66,8 +66,9 @@ def at_station(station):
 
             at_target_station = False
 
-    for j in filtered_journeys:
-        print(j)
+    # for j in filtered_journeys:
+    #     if j[0] != 'STFD':
+    #         print(j)
 
-    # return filtered_journeys
+    return filtered_journeys
     # return
