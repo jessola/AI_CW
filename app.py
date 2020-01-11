@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import pusher
 
 from conversation2 import Engine
+from conversation4 import ChatBot
 from journeys import get_journeys, get_all_journeys, at_station
 
 app = Flask(__name__)
@@ -17,9 +18,6 @@ pusher_client = pusher.Pusher(
     ssl=True,
 )
 
-e = Engine()
-e.reset()
-
 
 def output_statement(text):
     pusher_client.trigger('my-channel', 'statement', {'message': text})
@@ -29,9 +27,13 @@ def output_question(text):
     pusher_client.trigger('my-channel', 'question', {'message': text})
 
 
-e.init_output_statement(output_statement)
-e.init_output_question(output_question)
-e.run()
+# e = Engine()
+e = ChatBot(output_statement, output_question)
+e.reset()
+
+# e.init_output_statement(output_statement)
+# e.init_output_question(output_question)
+# e.run()
 
 # e = Engine()
 # e.reset()
@@ -73,5 +75,6 @@ if __name__ == "__main__":
     # e.run()
 
     # at_station('DISS')
+    e.run()
 
     app.run(debug=True)

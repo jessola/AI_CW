@@ -1,13 +1,13 @@
 from random import choice
 
 
-def ask_return_time():
+def ask_return_date():
     """Prompts the user to specify when they want to return.
   """
 
     options = [
-        'What time do you want to return?',
-        'What time are you coming back?',
+        'When do you want to return?',
+        'When are you coming back?',
     ]
 
     # Select a random question.
