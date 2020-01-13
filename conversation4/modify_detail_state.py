@@ -39,31 +39,3 @@ class ModStateRules:
             self.remove_instances('departure_time')
 
         self.modify(state, status='QUESTIONING')
-
-    # @Rule(
-    #     AS.state << State(status='MODIFYING'),
-    #     Task('TICKET'),
-    #     AS.mod << ToModify(),
-    #     AS.dep_from << DepartingFrom(),
-    #     AS.dep_to << DepartingTo(),
-    #     AS.dep_date << DepartureDate(),
-    #     AS.dep_time << DepartureTime(),
-    # )
-    # def mod_test(self, state, mod, dep_from, dep_to, dep_date, dep_time):
-    #     if mod['dep_from']:
-    #         self.retract(dep_from)
-    #         self.ticket_questions.insert(0, 'departing_from')
-
-    #     if mod['dep_to']:
-    #         self.retract(dep_to)
-    #         self.ticket_questions.insert(0, 'departing_to')
-
-    #     if mod['dep_date']:
-    #         self.retract(dep_date)
-    #         self.ticket_questions.insert(0, 'departure_date')
-
-    #     if mod['dep_time']:
-    #         self.retract(dep_time)
-    #         self.ticket_questions.insert(0, 'departure_time')
-
-    #     self.modify(state, status='QUESTIONING')

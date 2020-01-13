@@ -51,6 +51,12 @@ class FreeformStateRules:
         sentence += segments + last_two_words + '.'
         # End of message formatting logic
 
+        # if params['dep_from'].lower() == 'norwich':
+        #     self.retract(params)
+        #     self.state_message('That failed.')
+        #     self.modify(state, status=self.prev_state)
+        #     return
+
         self.declare(Task('TICKET'))
 
         if params['dep_from'] != '':

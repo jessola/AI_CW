@@ -33,5 +33,8 @@ class TicketQsStateRules:
     )
     def answered_ticket_question(self, f, subject, val):
         self.retract(f)
+
+        # Validate
+
         self.declare(return_fact(subject, val))
         self.mark_answered_ticket(subject)

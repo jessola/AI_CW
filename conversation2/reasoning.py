@@ -71,3 +71,11 @@ class Engine(TicketRules, ConfirmationRules, DepartingFromRules,
     @Rule(Task('delays'))
     def task_delays(self):
         self.output_statement('BOT:\tI can not yet predict delays. Sorry.')
+
+
+if __name__ == '__main__':
+    e = Engine()
+    e.reset()
+    e.init_output_statement(lambda x: print(x))
+    e.init_output_question(lambda x: e.listen(input(x)))
+    e.run()
