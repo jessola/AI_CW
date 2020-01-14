@@ -83,9 +83,10 @@ class ChatBot(
         if topic in self.ticket_questions:
             self.ticket_questions.remove(topic)
 
-    def mark_answered_delay(self, topic):
-        if topic in self.delay_questions:
-            self.delay_questions.remove(topic)
+    def mark_answered_delay(self, *topics):
+        for topic in topics:
+            if topic in self.delay_questions:
+                self.delay_questions.remove(topic)
 
 
 if __name__ == '__main__':

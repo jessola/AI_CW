@@ -1,6 +1,7 @@
 from experta import *
 
 from questions import ask_question
+from validation import validate
 
 from .utilities import return_fact
 from .fact_types import *
@@ -35,6 +36,11 @@ class TicketQsStateRules:
         self.retract(f)
 
         # Validate
+        error = validate(val, subject)
+        if error:
+            self.state_message(error)
+            return
 
-        self.declare(return_fact(subject, val))
+        new_fact = return_fact(subject, val)
+        self.declare(new_fact)
         self.mark_answered_ticket(subject)
