@@ -48,7 +48,8 @@ def from_station(station, departing=False):
 
     # print(reg.predict([[1, 15]]))
     # print(Y_pred)
-    format_results(Y_test, Y_pred, Y_pred2)
+    # format_results(Y_test, Y_pred, Y_pred2)
+    return reg
 
 
-from_station('STWMRKT', True)
+# from_station('STWMRKT', True)

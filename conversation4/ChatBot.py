@@ -5,12 +5,13 @@ from .fact_types import Task, State, Input
 # Rulesets
 from .open_state import OpenStateRules
 from .ticket_ques_state import TicketQsStateRules
+from .delay_ques_state import DelayQsStateRules
 from .ticket_conf_state import TicketConfRules
 from .modify_detail_state import ModStateRules
 from .freeform_state import FreeformStateRules
 from .input_rules import InputRules
 
-questions = [
+questions_ticket = [
     'departing_from',
     'departing_to',
     'departure_date',
@@ -20,6 +21,12 @@ questions = [
     'return_time',
 ]
 
+questions_delay = [
+    'departing_from',
+    'departing_to',
+    'previous_delay',
+]
+
 
 class ChatBot(
         FreeformStateRules,
@@ -27,6 +34,7 @@ class ChatBot(
         ModStateRules,
         TicketConfRules,
         TicketQsStateRules,
+        DelayQsStateRules,
         OpenStateRules,
         KnowledgeEngine,
 ):
@@ -34,8 +42,8 @@ class ChatBot(
         super().__init__()
         self.valid = False
         self.prev_state = None
-        self.ticket_questions = questions
-        self.delay_questions = []
+        self.ticket_questions = questions_ticket
+        self.delay_questions = questions_delay
         self.__state_message = state_message or (lambda m: print(m))
         self.__prompt_message = prompt_message or (
             lambda m: self.listen(input(m)))
@@ -79,9 +87,10 @@ class ChatBot(
         return self.delay_questions[0] if self.has_delay_qs else None
 
     # Mark a topic as answered, i.e. removing it from the list
-    def mark_answered_ticket(self, topic):
-        if topic in self.ticket_questions:
-            self.ticket_questions.remove(topic)
+    def mark_answered_ticket(self, *topics):
+        for topic in topics:
+            if topic in self.ticket_questions:
+                self.ticket_questions.remove(topic)
 
     def mark_answered_delay(self, *topics):
         for topic in topics:

@@ -33,4 +33,7 @@ def return_fact(name, value=None, **kwargs):
     if name == 'return_time':
         return ReturnTime(value)
 
+    if name == 'previous_delay':
+        return PreviousDelay(value)
+
     return None

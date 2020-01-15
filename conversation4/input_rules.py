@@ -94,6 +94,15 @@ class InputRules:
         self.retract_input(text)
 
     # Delay
+    @Rule(
+        AS.text << Input(W()),
+        AS.state << State(status=W()),
+        Task('DELAY'),
+    )
+    def delay_input(self, text, state):
+        # TODO: Some validation
+        if state['status'] == 'QUESTIONING':
+            self.declare(Fact(subject=self.next_delay_q(), value=text[0]))
 
     # Set task to ticket
     @Rule(~Task() & AS.f << Fact(subject='task', value='ticket'), salience=1)
@@ -106,5 +115,5 @@ class InputRules:
     @Rule(~Task() & AS.f << Fact(subject='task', value='delay'))
     def task_is_delay(self, f):
         self.retract(f)
-        self.state_message('I\'ll help you with the delays.')
+        self.state_message('I\'ll help you deal with delays.')
         self.declare(Task('DELAY'))

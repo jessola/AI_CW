@@ -5,6 +5,8 @@ from questions import ask_question
 from tickets.scraping import find_cheapest_ticket
 from .fact_types import *
 
+import re
+
 
 class TicketConfRules:
     """When there is sufficient information for finding a ticket.
@@ -69,7 +71,8 @@ class TicketConfRules:
         self.state_message('I\'ll find the cheapest ticket for you now.')
         # Output the ticket
         try:
-            self.state_message('*TICKET*' + str(
+            ticket_obj = str({
+                'ticket':
                 find_cheapest_ticket(
                     dep_from,
                     dep_to,
@@ -77,7 +80,12 @@ class TicketConfRules:
                         'condition': 'dep',
                         'date': self.create_date(dep_date, dep_time)
                     },
-                )))
+                )
+            })
+
+            # Format the ticket so it can be parsed to a JSON object
+            ticket_obj = str(ticket_obj).replace("'", '"')
+            self.state_message(ticket_obj)
         except:
             self.state_message(
                 'Sorry, I couldn\'t find any tickets matching the criteria you specified.'

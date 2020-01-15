@@ -21,6 +21,7 @@ class OpenStateRules:
         # print(self.facts[0])
 
     # Predicting Delays
-    @Rule(State(status='OPEN'), Task('DELAY'))
-    def predicting_delay(self):
-        self.state_message('Can\'t do this yet.')
+    @Rule(AS.f << State(status='OPEN'), Task('DELAY'))
+    def predicting_delay(self, f):
+        # self.state_message('Can\'t do this yet.')
+        self.modify(f, status='QUESTIONING')

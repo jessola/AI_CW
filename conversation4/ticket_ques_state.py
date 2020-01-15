@@ -44,3 +44,8 @@ class TicketQsStateRules:
         new_fact = return_fact(subject, val)
         self.declare(new_fact)
         self.mark_answered_ticket(subject)
+
+        # When it's a single ticket
+        if new_fact[0] == False:
+            self.declare(ReturnDate(None), ReturnTime(None))
+            self.mark_answered_ticket('return_date', 'return_time')
