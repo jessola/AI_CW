@@ -1,0 +1,62 @@
+import spacy
+from spacy.symbols import prep
+
+nlp = spacy.load('en_core_web_lg')
+
+input = "I want a ticket from norwich to ely at 2:00pm on the 17th"
+def inputNLP():
+
+    doc = nlp(input)
+
+    ticketdict = {
+        "departing_from": None,
+        "departing_to": None,
+        "departure_condition": None,
+        "departure_date": None,
+        "departure_time": None,
+        "num_adults": None,
+        "num_children": None,
+        "returning": None,
+        "return_condition": None,
+        "return_date": None,
+        "return_time" : None  
+    }
+
+    """for ent in doc.ents:
+        print(ent.text, ent.label_)"""
+
+    for ent in doc.ents:
+        #finding dep_to and dep_from
+        #Need to add conditions for if location has no previous tokens
+        if ent.label_ == "GPE":
+            if ent.start != 0:
+                prev_token = doc[ent.start - 1]
+                if prev_token.text in ("From", "from"):
+                    ticketdict.update({"departing_from": ent.text})
+                if prev_token.text in ("to"):
+                    ticketdict.update({"departing_to": ent.text})
+
+        #find departure date
+        if ent.label_ == "DATE":
+            ticketdict.update({"departure_date": ent.text})
+
+        #find departure condition or time
+        if ent.label_ == "TIME":
+            if ent.start != 0: 
+                prev_token1 = doc[ent.start - 1]
+                prev_token2 = doc[ent.start - 2]
+                if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
+                    ticketdict.update({"departure_condtion": ent.text})
+                else:  
+                    ticketdict.update({"departure_time": ent.text})   
+
+                    
+
+        
+    
+
+
+
+    print(ticketdict)
+
+inputNLP()
