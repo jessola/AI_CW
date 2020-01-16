@@ -1,5 +1,6 @@
 from .departing_to_from import validate_dep_to_from
 from .returning import validate_ret
+from .times import validate_time
 
 
 def validate(value, option):
@@ -10,5 +11,9 @@ def validate(value, option):
     # Returning was not 'yes' or 'no'
     if option == 'returning':
         return validate_ret(value)
+
+    # Any times
+    if option in ['departure_time', 'return_time']:
+        return validate_time(value)
 
     return None

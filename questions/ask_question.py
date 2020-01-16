@@ -11,7 +11,7 @@ from .ask_return_time import ask_return_time
 from .ask_travelling_alone import ask_travelling_alone
 
 
-def ask_question(topic):
+def ask_question(topic, context=None):
     """Prompts the user to give details about the chosen topic.
   
   Arguments:
@@ -22,19 +22,19 @@ def ask_question(topic):
 
     # Switch
     if topic == "departing_from":
-        question = ask_departing_from()
+        question = ask_departing_from(context)
 
     elif topic == "departing_to":
-        question = ask_departing_to()
+        question = ask_departing_to(context)
 
     elif topic == "departure_condition":
         question = ask_departure_condition()
 
     elif topic == "departure_date":
-        question = ask_departure_date()
+        question = ask_departure_date(context)
 
     elif topic == "departure_time":
-        question = ask_departure_time()
+        question = ask_departure_time(context)
 
     elif topic == "num_adults":
         question = ask_num_adults()
@@ -43,7 +43,7 @@ def ask_question(topic):
         question = ask_num_children()
 
     elif topic == "returning":
-        question = ask_returning()
+        question = ask_returning(context)
 
     elif topic == 'return_condition':
         question = ask_departure_condition()

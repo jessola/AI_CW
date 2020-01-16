@@ -24,7 +24,7 @@ def return_fact(name, value=None, **kwargs):
         return DepartureTime(value)
 
     if name == 'returning':
-        answer = True if value.lower()[0] == 'y' else False
+        answer = True if value and value.lower()[0] == 'y' else False
         return Returning(answer)
 
     if name == 'return_date':

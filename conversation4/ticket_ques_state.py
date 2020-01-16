@@ -24,7 +24,8 @@ class TicketQsStateRules:
     def more_info_required(self):
         if self.valid:
             self.valid = False
-            self.prompt_message(ask_question(self.next_ticket_q()))
+            self.prompt_message(
+                ask_question(self.next_ticket_q(), self.context))
 
     # Question is answered
     @Rule(

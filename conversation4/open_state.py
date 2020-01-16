@@ -1,6 +1,7 @@
 from experta import *
 
 from .fact_types import State, Task
+from .utilities import return_fact
 from questions import ask_question
 
 
@@ -8,6 +9,28 @@ class OpenStateRules:
     """Defines how interactions with the chatbot work when it does not know what
   task it is doing, for example.
   """
+
+    # Get all of the currently specified information
+    @property
+    def context(self):
+        current_context = {
+            'departing_from': None,
+            'departing_to': None,
+            'departure_date': None,
+            'departure_time': None,
+            'returning': None,
+        }
+
+        try:
+            for key in current_context.keys():
+                for fact in self.facts.values():
+                    if isinstance(fact, type(return_fact(key))):
+                        current_context.update({key: fact[0]})
+        except Exception as e:
+            print(e)
+
+        return current_context
+
     # Initial State
     @Rule(State(status='OPEN'), ~Task())
     def how_can_bot_help(self):
