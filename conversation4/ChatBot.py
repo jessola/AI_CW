@@ -41,6 +41,7 @@ class ChatBot(
     def __init__(self, state_message=None, prompt_message=None):
         super().__init__()
         self.valid = False
+        self.just_suggested = False
         self.prev_state = None
         self.ticket_questions = questions_ticket
         self.delay_questions = questions_delay
@@ -88,11 +89,15 @@ class ChatBot(
 
     # Mark a topic as answered, i.e. removing it from the list
     def mark_answered_ticket(self, *topics):
+        self.just_suggested = False
+
         for topic in topics:
             if topic in self.ticket_questions:
                 self.ticket_questions.remove(topic)
 
     def mark_answered_delay(self, *topics):
+        self.just_suggested = False
+
         for topic in topics:
             if topic in self.delay_questions:
                 self.delay_questions.remove(topic)

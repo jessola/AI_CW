@@ -1,7 +1,7 @@
 from experta import *
 
 from questions import ask_question
-from validation import validate
+from validation import validate, suggest
 
 from .utilities import return_fact
 from .fact_types import *
@@ -36,7 +36,15 @@ class TicketQsStateRules:
     def answered_ticket_question(self, f, subject, val):
         self.retract(f)
 
-        # Validate
+        # Check for suggestions
+        if not self.just_suggested:
+            sug = suggest(val, subject)
+            if sug:
+                self.just_suggested = True
+                self.state_message('Did you mean %s?' % sug)
+                return
+
+        # Check for errors
         error = validate(val, subject)
         if error:
             self.state_message(error)

@@ -1,1 +1,1 @@
-from .index import validate
+from .index import validate, suggest
