@@ -7,9 +7,11 @@ from .open_state import OpenStateRules
 from .ticket_ques_state import TicketQsStateRules
 from .delay_ques_state import DelayQsStateRules
 from .ticket_conf_state import TicketConfRules
+from .delay_conf_state import DelayConfRules
 from .modify_detail_state import ModStateRules
 from .freeform_state import FreeformStateRules
 from .input_rules import InputRules
+from .suggest_state import SuggestionStateRules
 
 questions_ticket = [
     'departing_from',
@@ -24,6 +26,8 @@ questions_ticket = [
 questions_delay = [
     'departing_from',
     'departing_to',
+    'departure_date',
+    'departure_time',
     'previous_delay',
 ]
 
@@ -32,8 +36,10 @@ class ChatBot(
         FreeformStateRules,
         InputRules,
         ModStateRules,
+        SuggestionStateRules,
         TicketConfRules,
         TicketQsStateRules,
+        DelayConfRules,
         DelayQsStateRules,
         OpenStateRules,
         KnowledgeEngine,

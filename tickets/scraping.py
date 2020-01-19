@@ -84,7 +84,8 @@ def find_cheapest_ticket(dep_from,
         'arrival_time': format_output(output_arr_time),
         'departing_from': format_output(output_dep_from),
         'departing_to': format_output(output_dep_to),
-        'price': format_output(output_price)[1:]  # remove the currency symbol
+        'price': format_output(output_price)[1:],  # remove the currency symbol
+        # 'returning': True if ret_date else False
     }
 
 

@@ -1,4 +1,4 @@
-def validate_ret(answer):
+def validate_ret(answer, context=None):
     error = None
 
     if answer.lower() not in ['yes', 'yeah', 'yep', 'no', 'nope', 'nah']:

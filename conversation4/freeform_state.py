@@ -1,6 +1,7 @@
 from experta import *
 
 from .fact_types import *
+from validation import validate, suggest
 
 
 class FreeformStateRules:
@@ -12,6 +13,32 @@ class FreeformStateRules:
         ~Fact(subject='accepted'),
     )
     def freeform(self, state, params):
+        errors = []
+
+        # TODO: Determine ticket or delays
+        self.declare(Task('TICKET'))
+
+        # Check for suggestions
+        try:
+            sug = suggest(params['dep_from'], 'departing_from', self.context)
+            if sug and not self.just_suggested:
+                self.just_suggested = True
+                self.state_message('Do you mean %s?' % sug)
+                self.declare(Suggested('subject', sug))
+                # self.set_prev_state('FREEFORM')
+                self.modify(state, status='SUGGESTING')
+                return
+        except Exception as e:
+            self.state_message(str(e))
+
+        # Check for errors
+        error = validate(params['dep_from'], 'departing_from', self.context)
+        if error:
+            self.state_message(error)
+            errors.append('dep_from')
+
+        # self.retract(params)
+
         sentence = 'You want to '
 
         # TODO: Create a nicer method for this
@@ -30,7 +57,7 @@ class FreeformStateRules:
 
         # Stitch them together
         segments = []
-        if str_dep_from is not None:
+        if str_dep_from is not None and 'dep_from' not in errors:
             segments.append(str_dep_from)
 
         if str_dep_to is not None:
@@ -51,15 +78,9 @@ class FreeformStateRules:
         sentence += segments + last_two_words + '.'
         # End of message formatting logic
 
-        # if params['dep_from'].lower() == 'norwich':
-        #     self.retract(params)
-        #     self.state_message('That failed.')
-        #     self.modify(state, status=self.prev_state)
-        #     return
+        # self.declare(Task('TICKET'))
 
-        self.declare(Task('TICKET'))
-
-        if params['dep_from'] != '':
+        if params['dep_from'] != '' and 'dep_from' not in errors:
             self.declare(DepartingFrom(params['dep_from']))
             self.mark_answered_ticket('departing_from')
 

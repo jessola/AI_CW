@@ -91,6 +91,11 @@ class InputRules:
             res = True if text[0][0].lower() == 'y' else False
             self.declare(Fact(subject='accepted', value=res))
 
+        if state['status'] == 'SUGGESTING':
+            # TODO: Proper 'YES' or 'NO' detection
+            res = True if text[0][0].lower() == 'y' else False
+            self.declare(Fact(subject='agreed', value=res))
+
         self.retract_input(text)
 
     # Delay

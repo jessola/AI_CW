@@ -59,6 +59,8 @@ class TicketConfRules:
               DepartureDate(MATCH.dep_date),
               DepartureTime(MATCH.dep_time),
               Returning(MATCH.ret),
+              ReturnDate(MATCH.ret_date),
+              ReturnTime(MATCH.ret_time),
           ), Confirmed())
     def verify_ticket_info(
         self,
@@ -67,6 +69,9 @@ class TicketConfRules:
         dep_to,
         dep_date,
         dep_time,
+        ret,
+        ret_date,
+        ret_time,
     ):
         self.state_message('I\'ll find the cheapest ticket for you now.')
         # Output the ticket
@@ -80,13 +85,18 @@ class TicketConfRules:
                         'condition': 'dep',
                         'date': self.create_date(dep_date, dep_time)
                     },
+                    {
+                        'condition': 'dep',
+                        'date': self.create_date(ret_date, ret_time)
+                    } if ret else None,
                 )
             })
 
             # Format the ticket so it can be parsed to a JSON object
             ticket_obj = str(ticket_obj).replace("'", '"')
             self.state_message(ticket_obj)
-        except:
+        except Exception as e:
+            print(str(e))
             self.state_message(
                 'Sorry, I couldn\'t find any tickets matching the criteria you specified.'
             )

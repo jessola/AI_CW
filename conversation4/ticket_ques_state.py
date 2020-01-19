@@ -29,23 +29,26 @@ class TicketQsStateRules:
 
     # Question is answered
     @Rule(
-        State(status='QUESTIONING'),
+        AS.state << State(status='QUESTIONING'),
         Task('TICKET'),
         AS.f << Fact(subject=MATCH.subject, value=MATCH.val),
     )
-    def answered_ticket_question(self, f, subject, val):
+    def answered_ticket_question(self, state, f, subject, val):
         self.retract(f)
 
         # Check for suggestions
         if not self.just_suggested:
-            sug = suggest(val, subject)
+            sug = suggest(val, subject, self.context)
             if sug:
                 self.just_suggested = True
-                self.state_message('Did you mean %s?' % sug)
+                self.state_message('Do you mean %s?' % sug)
+                self.declare(Suggested(subject, sug))
+                self.set_prev_state('QUESTIONING')
+                self.modify(state, status='SUGGESTING')
                 return
 
         # Check for errors
-        error = validate(val, subject)
+        error = validate(val, subject, self.context)
         if error:
             self.state_message(error)
             return

@@ -2,7 +2,7 @@ from datetime import datetime
 import re
 
 
-def validate_date(date):
+def validate_date(date, context=None):
     """Validates date strings, ensuring date is in 2020 and not in the past as
   this is what's required for the web scraping to work properly.
   

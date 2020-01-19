@@ -30,6 +30,10 @@ class DepartureTime(Fact):
     pass
 
 
+class Suggested(Fact):
+    pass
+
+
 # Finding Tickets
 class Returning(Fact):
     pass

@@ -15,13 +15,16 @@ class DelayQsStateRules:
           OR(
               ~DepartingFrom(),
               ~DepartingTo(),
+              ~DepartureDate(),
+              ~DepartureTime(),
               ~PreviousDelay(),
           ))
     def more_delay_info_required(self):
         if self.valid:
             self.valid = False
             self.prompt_message(
-                ask_question(self.next_delay_q()) or self.next_delay_q())
+                ask_question(self.next_delay_q(), self.context)
+                or self.next_delay_q())
 
     # Question is answered
     @Rule(

@@ -1,7 +1,7 @@
 import re
 
 
-def validate_time(time):
+def validate_time(time, context=None):
     """Ensures that times are formatted properly, i.e. 2pm should be 1400.
       
       Arguments:

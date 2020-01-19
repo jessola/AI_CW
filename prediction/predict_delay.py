@@ -2,42 +2,7 @@ from datetime import datetime, timedelta
 from joblib import load
 
 from .from_station import from_station
-
-
-# Convert the actual station name into format required for algorithms
-def name_to_id(station_name):
-    stations = {
-        'norwich': 'norw',
-        'diss': 'diss',
-        'stowmarket': 'stow',
-        'ipswich': 'ipsw',
-        'manningtree': 'mann',
-        'colchester': 'colc',
-        'chelmsford': 'chel',
-        'stratford': 'stfd',
-        'london': 'lliv',
-    }
-
-    if station_name.lower() not in stations.keys():
-        return None
-
-    return stations[station_name]
-
-
-# Load in a prediction model
-prefix = 'prediction/models'
-
-
-def model(name, dep=True):
-    try:
-        return load('{}/{}_{}.joblib'.format(
-            prefix,
-            name_to_id(name),
-            'dep' if dep else 'arr',
-        ))
-    except:
-        return None
-
+from .constants import name_to_id, model
 
 # Determine whether or not date is on weekday
 IS_WEEKDAY = lambda d: 1 if d.weekday() > 4 else 0
