@@ -58,7 +58,7 @@ def inputNLP(input, returningInput = None):
                     prev_token1 = doc[ent.start - 1]
                     prev_token2 = doc[ent.start - 2]
                     if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
-                        ticketdict.update({"departure_condtion": ent.text})
+                        ticketdict.update({"departure_condition": ent.text})
                     else:  
                         ticketdict.update({"departure_time": ent.text})
 
@@ -85,7 +85,7 @@ def inputNLP(input, returningInput = None):
                     prev_token1 = doc[ent.start - 1]
                     prev_token2 = doc[ent.start - 2]
                     if  prev_token1.dep_ == "prep" and (prev_token2.lemma_ in ("arrive", "there")):
-                        ticketdict.update({"return_condtion": ent.text})
+                        ticketdict.update({"return_condition": ent.text})
                     else:  
                         ticketdict.update({"return_time": ent.text})
 
