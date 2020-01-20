@@ -55,7 +55,7 @@ def inputNLP(input, returningInput = None):
                 date = re.sub("[^0-9]", '', date)
                 datenew = datetime.now()
                 depdate = datenew.replace(day = int(date), hour = 0, minute = 0, second = 0).strftime('%d%m%y')
-                ticketdict.update({"return_date": depdate})
+                ticketdict.update({"departure_date": depdate})
 
             #find departure condition or time
             if ent.label_ == "TIME":
