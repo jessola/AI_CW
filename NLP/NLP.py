@@ -62,7 +62,6 @@ def inputNLP(returningInput = None):
 
         #find num_adults
         if ent.label_ == "CARDINAL":
-            if
             next_token = doc[ent.start + 1]
             if  next_token.lemma_ in ("adult") and ent.start != doc.end.i:
                 ticketdict.update({"num_adults": ent.text})
