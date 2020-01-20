@@ -5,7 +5,9 @@ from spacy.symbols import prep
 nlp = spacy.load('en_core_web_lg')
 
 input = "I want a ticket from norwich to ely at 2:00pm on the 17th and return on the 18th and get there by 6:00pm"
-def inputNLP(returningInput = None):
+
+
+def inputNLP(returningInput=None):
 
     doc = nlp(input)
     returning = None
@@ -63,12 +65,12 @@ def inputNLP(returningInput = None):
         #find num_adults
         if ent.label_ == "CARDINAL" and ent.start != len(doc) - 1:
             next_token = doc[ent.start + 1]
-            if  next_token.lemma_ in ("adult"):
+            if next_token.lemma_ in ("adult"):
                 ticketdict.update({"num_adults": ent.text})
         #find num_children
         if ent.label_ == "CARDINAL" and ent.start != len(doc) - 1:
             next_token = doc[ent.start + 1]
-            if  next_token.lemma_ in ("child", "kid"):
+            if next_token.lemma_ in ("child", "kid"):
                 ticketdict.update({"num_children": ent.text})
 
         if returning or returningInput and ent.start > tokenReturning:
@@ -88,7 +90,7 @@ def inputNLP(returningInput = None):
                     else:
                         ticketdict.update({"return_time": ent.text})
 
-        print(ticketdict)
+    print(ticketdict)
 
 
 inputNLP()
