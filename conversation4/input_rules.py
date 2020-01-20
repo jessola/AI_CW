@@ -41,11 +41,20 @@ class InputRules:
         if details['departing_from'] or details['departing_to']:
             dep_from = details['departing_from'] or None
             dep_to = details['departing_to'] or None
+            dep_date = details['departure_date'] or None
+            dep_time = details['departure_time'] or None
+            ret = details['returning'] or None
+
             if dep_from:
                 params['dep_from'] = dep_from
-
             if dep_to:
                 params['dep_to'] = dep_to
+            if dep_date:
+                params['dep_date'] = dep_date
+            if dep_time:
+                params['dep_time'] = dep_time
+            if ret:
+                params['ret'] = ret
 
             self.declare(
                 FreeformTicket(
