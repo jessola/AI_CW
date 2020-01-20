@@ -6,6 +6,8 @@ from .ask_departure_time import ask_departure_time
 from .ask_destination import ask_destination
 from .ask_num_adults import ask_num_adults
 from .ask_num_children import ask_num_children
+from .ask_other_stations import ask_other_stations
+from .ask_previous_delay import ask_previous_delay
 from .ask_returning import ask_returning
 from .ask_return_date import ask_return_date
 from .ask_return_time import ask_return_time
@@ -46,6 +48,12 @@ def ask_question(topic, context=None):
 
     elif topic == "num_children":
         question = ask_num_children()
+
+    elif topic == 'other_stations':
+        question = ask_other_stations(context)
+
+    elif topic == 'previous_delay':
+        question = ask_previous_delay(context)
 
     elif topic == "returning":
         question = ask_returning(context)

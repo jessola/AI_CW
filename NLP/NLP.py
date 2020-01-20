@@ -45,9 +45,9 @@ def inputNLP(input, returningInput=None):
             if ent.label_ == "GPE":
                 if ent.start != 0:
                     prev_token = doc[ent.start - 1]
-                    if prev_token.text in ("From", "from"):
+                    if prev_token.lemma_ in ("from", "depart"):
                         ticketdict.update({"departing_from": ent.text})
-                    if prev_token.text in ("to"):
+                    if prev_token.lemma_ in ("to", "at"):
                         ticketdict.update({"departing_to": ent.text})
 
             #find departure date
@@ -125,3 +125,44 @@ def inputNLP(input, returningInput=None):
                         ticketdict.update({"departure_time": out_time})
 
     return ticketdict
+
+
+def predictionNLP(input):
+
+    doc = nlp(input)
+    predictiondict = {
+        "departing_from": None,
+        "departing_to": None,
+        "departure_date": None,
+        "departure_time": None,
+        "previous_delay": None
+    }
+
+    for ent in doc.ents:
+
+        if ent.label_ == "TIME":
+            if ent.start != 0:
+                prev_token1 = doc[ent.start - 1]
+                prev_token2 = doc[ent.start - 2]
+                if (prev_token1.lemma_ in ("delay")) or (
+                        prev_token2.lemma_ in ("delay")):
+                    time = ent.text
+                    time = re.sub("[^0-9]", '', time)
+                    delaytime = int(time)
+                    predictiondict.update({"previous_delay": delaytime})
+
+        if ent.label_ == "GPE":
+            if ent.start != 0:
+                prev_token = doc[ent.start - 1]
+                if prev_token.lemma_ in ("from", "depart"):
+                    predictiondict.update({"departing_from": ent.text})
+                if prev_token.lemma_ in ("to", "at"):
+                    predictiondict.update({"departing_to": ent.text})
+
+    return predictiondict
+
+
+print(
+    predictionNLP(
+        "My train was going from Norwich to Ely and was delayed for 50 minutes can you tell me when ill reach my destination"
+    ))

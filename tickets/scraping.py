@@ -61,7 +61,7 @@ def find_cheapest_ticket(dep_from,
     soup = BeautifulSoup(html, "html.parser")
 
     # Get relevant information > FORMAT THESE LATER
-    output_dep_date = '!DATE'
+    output_dep_date = datetime.strftime(dep_date['date'], '%d/%m/%y')
     output_dep_from = soup.select_one('td.from').next_element
     output_dep_to = soup.select_one(
         'td.to').next_element.next_element.next_element.next_element
