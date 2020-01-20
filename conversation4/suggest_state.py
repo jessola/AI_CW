@@ -3,6 +3,7 @@ from datetime import datetime
 
 from questions import ask_question
 from validation import validate
+from railway.station import add_alias
 
 from .utilities import return_fact
 from .fact_types import *
@@ -54,6 +55,14 @@ class SuggestionStateRules:
 
             for fact in to_delete:
                 self.retract(fact)
+
+            # Update the database
+            try:
+                add_alias(sug[1], sug[2])
+                self.state_message('UPDATED')
+            except Exception as e:
+                self.state_message(str(e))
+
             self.modify(free, departing_from=sug[1])
             self.retract(sug)
             self.retract(f)

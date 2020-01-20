@@ -84,6 +84,21 @@ def get_station(name):
     return Station.objects(name__iexact=name)
 
 
+def add_alias(station, new_alias):
+    """Adds a new alias for a given station.
+    
+    Arguments:
+        station {str} -- Name of the station
+        new_alias {str} -- New alias for the station
+    """
+
+    target_station = Station.objects(name__iexact=station)[0]
+
+    if target_station and new_alias.lower() not in target_station['aliases']:
+        target_station['aliases'].append(new_alias.lower())
+        target_station.save()
+
+
 def get_station_by_code(code):
     """Gets a Station document with the given code.
     

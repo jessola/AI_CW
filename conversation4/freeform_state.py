@@ -29,7 +29,12 @@ class FreeformStateRules:
                     if sug and not self.just_suggested:
                         self.just_suggested = True
                         self.state_message(sug['message'])
-                        self.declare(Suggested('subject', sug['value']))
+                        self.declare(
+                            Suggested(
+                                'subject',
+                                sug['value'],
+                                sug['original'],
+                            ))
                         return True
 
             return False

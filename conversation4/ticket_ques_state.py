@@ -41,7 +41,7 @@ class TicketQsStateRules:
         if sug:
             self.just_suggested = True
             self.state_message(sug['message'])
-            self.declare(Suggested(subject, sug['value']))
+            self.declare(Suggested(subject, sug['value'], sug['original']))
             self.set_prev_state('QUESTIONING')
             self.modify(state, status='SUGGESTING')
             return

@@ -98,14 +98,16 @@ def suggest_dep_to_from(station, context=None):
     if station.lower() in ['noriwch', 'uea', 'norrich']:
         suggested = {
             'message': 'When you say "%s", do you mean Norwich?' % station,
-            'value': 'Norwich'
+            'value': 'Norwich',
+            'original': station.lower(),
         }
         return suggested
 
     if station.lower() == 'manny':
         suggested = {
             'message': 'When you say "%s", do you mean Manchester?' % station,
-            'value': 'Manchester'
+            'value': 'Manchester',
+            'original': station.lower(),
         }
         return suggested
 
