@@ -35,7 +35,7 @@ def inputNLP(input, returningInput=None):
     for ent in doc.ents:
 
         if (returning == None
-                or returninginput == None) or returningInput == True or (
+                or returningInput == None) or returningInput == True or (
                     returning == True and ent.start < tokenReturning):
             if ent.label_ == "GPE":
                 if ent.start != 0:
@@ -72,7 +72,7 @@ def inputNLP(input, returningInput=None):
                 ticketdict.update({"num_children": ent.text})
 
         if (returning == True
-                and ent.start > tokenReturning) or returninginput == True:
+                and ent.start > tokenReturning) or returningInput == True:
 
             #find return date
             if ent.label_ == "DATE":
