@@ -143,10 +143,10 @@ def predictionNLP(input):
                 if ent.start != 0:
                     prev_token = doc[ent.start - 1]
                     if prev_token.lemma_ in ("from", "depart"):
-                        ticketdict.update({"departing_from": ent.text})
+                        predictiondict.update({"departing_from": ent.text})
                     if prev_token.lemma_ in ("to", "at"):
-                        ticketdict.update({"departing_to": ent.text})
+                        predictiondict.update({"departing_to": ent.text})
 
     return predictiondict
-    
+
 print(predictionNLP("My train was delayed for 50 minutes can you tell me when ill reach my destination"))
