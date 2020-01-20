@@ -33,10 +33,10 @@ class SuggestionStateRules:
 
             # Update the database
             try:
-                self.state_message('UPDATED')
                 add_alias(sug[1], sug[2])
+                self.state_message('Okay, I\'ll make a note of that.')
             except Exception as e:
-                self.state_message('THIS ERROR', str(e))
+                self.state_message('I might not remember that, but okay.')
 
             self.declare(Fact(subject=sug[0], value=sug[1]))
             self.retract(sug)
@@ -65,10 +65,10 @@ class SuggestionStateRules:
 
             # Update the database
             try:
-                self.state_message('UPDATED')
                 add_alias(sug[1], sug[2])
+                self.state_message('Okay, I\'ll make a note of that.')
             except Exception as e:
-                self.state_message('THIS ERROR', str(e))
+                self.state_message('I might not remember that, but okay.')
 
             self.modify(free, departing_from=sug[1])
             self.retract(sug)

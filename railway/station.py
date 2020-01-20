@@ -118,7 +118,7 @@ def add_alias(station, new_alias):
     if not new_alias:
         return
 
-    target_station = Station.objects(name__iexact=station)[0]
+    target_station = Station.objects(name__icontains=station)[0]
 
     if target_station and new_alias.lower() not in target_station['aliases']:
         target_station['aliases'].append(new_alias.lower())

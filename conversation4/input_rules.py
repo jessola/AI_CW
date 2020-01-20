@@ -54,7 +54,7 @@ class InputRules:
             if dep_time:
                 params['dep_time'] = dep_time
             if ret:
-                params['ret'] = ret
+                params['ret'] = 'yes' if ret else 'no'
 
             self.declare(
                 FreeformTicket(
