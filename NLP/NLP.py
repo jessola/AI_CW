@@ -58,7 +58,7 @@ def inputNLP(input, returningInput = None):
                     prev_token1 = doc[ent.start - 1]
                     prev_token2 = doc[ent.start - 2]
                     if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
-                        ticketdict.update({"depature_condition": "arr"})
+                        ticketdict.update({"departure_condition": "arr"})
                         ticketdict.update({"departure_time": ent.text})
                     else:
                         ticketdict.update({"departure_condition": "dep"})  
