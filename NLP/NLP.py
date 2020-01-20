@@ -18,7 +18,7 @@ def inputNLP(input, returningInput = None):
         "departure_time": None,
         "num_adults": None,
         "num_children": None,
-        "returning": None,
+        "returning": returningInput,
         "return_condition": None,
         "return_date": None,
         "return_time" : None  
@@ -31,6 +31,7 @@ def inputNLP(input, returningInput = None):
         if token.lemma_ == "return":
             returning = True
             tokenReturning = token.i
+            ticketdict.update({"returning": True})
 
     #print(returning)
     #print(tokenReturning)
@@ -38,7 +39,7 @@ def inputNLP(input, returningInput = None):
     for ent in doc.ents:
 
         
-        if (returning == True and ent.start < tokenReturning) or (returningInput == True)  :
+        if (returning == True and ent.start < tokenReturning) or (returningInput == True) or (returning != True or returningInput != True)  :
             if ent.label_ == "GPE":
                 if ent.start != 0:
                     prev_token = doc[ent.start - 1]
@@ -83,7 +84,7 @@ def inputNLP(input, returningInput = None):
                 if ent.start != 0: 
                     prev_token1 = doc[ent.start - 1]
                     prev_token2 = doc[ent.start - 2]
-                    if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
+                    if  prev_token1.dep_ == "prep" and (prev_token2.lemma_ in ("arrive", "there")):
                         ticketdict.update({"return_condtion": ent.text})
                     else:  
                         ticketdict.update({"return_time": ent.text})
