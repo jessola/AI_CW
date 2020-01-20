@@ -1,5 +1,5 @@
 import spacy
-import datetime
+from datetime import datetime
 from spacy.symbols import prep
 
 nlp = spacy.load('en_core_web_lg')
@@ -61,10 +61,16 @@ def inputNLP(input, returningInput=None):
                     if prev_token1.dep == prep and prev_token2.lemma_ in (
                             "arrive", "there"):
                         ticketdict.update({"departure_condition": "arr"})
-                        ticketdict.update({"departure_time": ent.text})
+                        strtime = ent.text
+                        in_time = datetime.strptime(strtime, "%I:%M%p")
+                        out_time = datetime.strftime(in_time, "%H%M")
+                        ticketdict.update({"departure_time": out_time})
                     else:
                         ticketdict.update({"departure_condition": "dep"})
-                        ticketdict.update({"departure_time": ent.text})
+                        strtime = ent.text
+                        in_time = datetime.strptime(strtime, "%I:%M%p")
+                        out_time = datetime.strftime(in_time, "%H%M")
+                        ticketdict.update({"departure_time": out_time})
 
         #find num_adults
         if ent.label_ == "CARDINAL" and ent.start != len(doc) - 1:
@@ -92,10 +98,16 @@ def inputNLP(input, returningInput=None):
                     if prev_token1.dep_ == "prep" and (prev_token2.lemma_ in (
                             "arrive", "there")):
                         ticketdict.update({"return_condition": "arr"})
-                        ticketdict.update({"return_time": ent.text})
+                        strtime = ent.text
+                        in_time = datetime.strptime(strtime, "%I:%M%p")
+                        out_time = datetime.strftime(in_time, "%H%M")
+                        ticketdict.update({"departure_time": out_time})
                     else:
                         ticketdict.update({"return_condition": "dep"})
-                        ticketdict.update({"return_time": ent.text})
+                        strtime = ent.text
+                        in_time = datetime.strptime(strtime, "%I:%M%p")
+                        out_time = datetime.strftime(in_time, "%H%M")
+                        ticketdict.update({"departure_time": out_time})
 
     return ticketdict
 

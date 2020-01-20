@@ -33,7 +33,7 @@ class FreeformStateRules:
                             Suggested(
                                 'subject',
                                 sug['value'],
-                                sug['original'],
+                                sug['original'] or None,
                             ))
                         return True
 

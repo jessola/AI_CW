@@ -91,6 +91,8 @@ def add_alias(station, new_alias):
         station {str} -- Name of the station
         new_alias {str} -- New alias for the station
     """
+    if not new_alias:
+        return
 
     target_station = Station.objects(name__iexact=station)[0]
 

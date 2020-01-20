@@ -124,7 +124,9 @@ def suggest_dep_to_from(station, context=None):
                     'Are you sure you want to depart from {} instead of {}?'.
                     format(station.title(), dep_from.title()),
                     'value':
-                    station
+                    station,
+                    'original':
+                    None,
                 }
 
             # Departing To

@@ -58,10 +58,10 @@ class SuggestionStateRules:
 
             # Update the database
             try:
-                add_alias(sug[1], sug[2])
                 self.state_message('UPDATED')
+                add_alias(sug[1], sug[2])
             except Exception as e:
-                self.state_message(str(e))
+                self.state_message('THIS ERROR', str(e))
 
             self.modify(free, departing_from=sug[1])
             self.retract(sug)
