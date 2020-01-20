@@ -39,7 +39,7 @@ def inputNLP(input, returningInput = None):
     for ent in doc.ents:
 
         
-        if (returning == True and ent.start < tokenReturning) or (returningInput == True) or (returning != True or returningInput != True)  :
+        if (returning == True and ent.start < tokenReturning) or (returningInput == True) or (returning != True and returningInput != True) :
             if ent.label_ == "GPE":
                 if ent.start != 0:
                     prev_token = doc[ent.start - 1]
