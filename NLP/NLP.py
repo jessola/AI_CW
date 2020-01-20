@@ -32,6 +32,9 @@ def inputNLP(input, returningInput=None):
             returning = True
             tokenReturning = token.i
 
+    print(returning)
+    print(tokenReturning)
+
     for ent in doc.ents:
 
         if returning != True:
@@ -86,6 +89,7 @@ def inputNLP(input, returningInput=None):
                         ticketdict.update({"return_condtion": ent.text})
                     else:
                         ticketdict.update({"return_time": ent.text})
+
     return ticketdict
 
 

@@ -27,8 +27,8 @@ class InputRules:
     @Rule(AS.text << Input(), AS.state << State(), ~Task('DELAY'), salience=1)
     def check_for_freefrom(self, text, state):
         # TODO: Logic for determining freeform input
-        details = text[0].split(', ')
-        details2 = inputNLP(text[0])
+        # details = text[0].split(', ')
+        details = inputNLP(text[0])
 
         params = {
             'dep_from': None,
@@ -38,15 +38,9 @@ class InputRules:
             'returning': None,
         }
 
-        if details2['departing_from'] or details2['departing_to']:
-            dep_from = details2['departing_from'] or None
-            dep_to = details2['departing_to'] or None
-            # for i, detail in enumerate(details):
-            # try:
-            #     if detail.strip() != '0':
-            #         params.update({list(params.keys())[i]: detail})
-            # except:
-            #     continue
+        if details['departing_from'] or details['departing_to']:
+            dep_from = details['departing_from'] or None
+            dep_to = details['departing_to'] or None
             if dep_from:
                 params['dep_from'] = dep_from
 
