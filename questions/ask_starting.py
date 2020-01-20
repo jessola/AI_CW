@@ -1,13 +1,12 @@
 from random import choice
 
 
-def ask_departing_from(context=None):
-    """Prompts the user to specify where they wish to depart from.
+def ask_starting(context=None):
+    """Prompts the user to specify where they started their journey.
   """
 
     options = [
-        'Where would you like to depart from?',
-        'What station are you leaving from?',
+        'Where did you depart from?', 'Which station are you at right now',
         'What\'s the starting point of your journey?'
     ]
 

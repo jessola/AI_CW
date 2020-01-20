@@ -31,7 +31,8 @@ class InputRules:
             'dep_from': None,
             'dep_to': None,
             'dep_date': None,
-            'dep_time': None
+            'dep_time': None,
+            'returning': None,
         }
 
         if len(details) > 1:
@@ -44,10 +45,11 @@ class InputRules:
 
             self.declare(
                 FreeformTicket(
-                    dep_from=params['dep_from'] or '',
-                    dep_to=params['dep_to'] or '',
-                    dep_date=params['dep_date'] or '',
-                    dep_time=params['dep_time'] or '',
+                    departing_from=params['dep_from'] or '',
+                    departing_to=params['dep_to'] or '',
+                    departure_date=params['dep_date'] or '',
+                    departure_time=params['dep_time'] or '',
+                    returning=params['returning'] or '',
                 ))
 
             self.retract_input(text)
@@ -91,20 +93,39 @@ class InputRules:
             res = True if text[0][0].lower() == 'y' else False
             self.declare(Fact(subject='accepted', value=res))
 
+        if state['status'] == 'SUGGESTING':
+            # TODO: Proper 'YES' or 'NO' detection
+            res = True if text[0][0].lower() == 'y' else False
+            self.declare(Fact(subject='agreed', value=res))
+
         self.retract_input(text)
 
     # Delay
+    @Rule(
+        AS.text << Input(W()),
+        AS.state << State(status=W()),
+        Task('DELAY'),
+    )
+    def delay_input(self, text, state):
+        # TODO: Some validation
+        if state['status'] == 'QUESTIONING':
+            self.declare(Fact(subject=self.next_delay_q(), value=text[0]))
 
-    # Set task to ticket
-    @Rule(~Task() & AS.f << Fact(subject='task', value='ticket'), salience=1)
+    # Set task to ticket or delay
+    @Rule(~Task() & AS.f << Fact(subject='task', value=W()), salience=1)
     def task_is_ticket(self, f):
         self.retract(f)
-        self.state_message('I can help you find a ticket.')
-        self.declare(Task('TICKET'))
+        res = f['value'].lower()
 
-    # Set task to delay prediction
-    @Rule(~Task() & AS.f << Fact(subject='task', value='delay'))
-    def task_is_delay(self, f):
-        self.retract(f)
-        self.state_message('I\'ll help you with the delays.')
-        self.declare(Task('DELAY'))
+        if 'ticket' in res and not 'delay' in res:
+            self.state_message('Sure thing.')
+            self.declare(Task('TICKET'))
+        elif 'delay' in res and not 'ticket' in res:
+            self.state_message(
+                'I\'ll try my best to help you with your delay.')
+            self.declare(Task('DELAY'))
+        else:
+            self.state_message('I\'m not too sure what you mean.')
+            self.prompt_message(
+                'I can help you find the cheapest ticket for your journey or predict the delay for a journey you\'re making. Which will it be?'
+            )

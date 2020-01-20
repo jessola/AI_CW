@@ -11,10 +11,10 @@ def return_fact(name, value=None, **kwargs):
       Keyword Arguments:
           kwargs {dict} -- Additional arguments (default: {dict()})
       """
-    if name == 'departing_from':
+    if name in ['departing_from', 'starting']:
         return DepartingFrom(value)
 
-    if name == 'departing_to':
+    if name in ['departing_to', 'destination']:
         return DepartingTo(value)
 
     if name == 'departure_date':
@@ -24,12 +24,19 @@ def return_fact(name, value=None, **kwargs):
         return DepartureTime(value)
 
     if name == 'returning':
-        return Returning(value)
+        answer = True if value and value.lower()[0] == 'y' else False
+        return Returning(answer)
 
     if name == 'return_date':
         return ReturnDate(value)
 
     if name == 'return_time':
         return ReturnTime(value)
+
+    if name == 'previous_delay':
+        return PreviousDelay(value)
+
+    if name == 'other_stations':
+        return OtherStations(value)
 
     return None

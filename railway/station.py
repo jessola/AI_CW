@@ -4,7 +4,8 @@ from railway.scraping import get_railway_stations
 
 # Connect to the database
 connect(
-    host="mongodb://group_ten:group10@ds037611.mlab.com:37611/railwaystations?retryWrites=false"
+    host=
+    "mongodb://group_ten:group10@ds037611.mlab.com:37611/railwaystations?retryWrites=false"
 )
 
 
@@ -70,6 +71,19 @@ def get_stations(name):
     return Station.objects(name__icontains=name)
 
 
+def get_station(name):
+    """Get station whose name is equal to the input parameter.
+    
+    Arguments:
+        name {str} -- Name to search for
+    
+    Returns:
+        {Station} -- Matching station or none
+    """
+
+    return Station.objects(name__iexact=name)
+
+
 def get_station_by_code(code):
     """Gets a Station document with the given code.
     
@@ -81,4 +95,3 @@ def get_station_by_code(code):
     """
 
     return Station.objects(code=code)[0]
-

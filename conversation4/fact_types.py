@@ -30,6 +30,10 @@ class DepartureTime(Fact):
     pass
 
 
+class Suggested(Fact):
+    pass
+
+
 # Finding Tickets
 class Returning(Fact):
     pass
@@ -48,13 +52,13 @@ class Confirmed(Fact):
 
 
 class FreeformTicket(Fact):
-    dep_from = Field(str, default='')
-    dep_to = Field(str, default='')
-    dep_date = Field(str, default='')
-    dep_time = Field(str, default='')
+    departing_from = Field(str, default='')
+    departing_to = Field(str, default='')
+    departure_date = Field(str, default='')
+    departure_time = Field(str, default='')
     returning = Field(str, default='')
-    ret_date = Field(str, default='')
-    ret_time = Field(str, default='')
+    return_date = Field(str, default='')
+    return_time = Field(str, default='')
 
 
 class ToModify(Fact):
@@ -72,4 +76,8 @@ class ToModify(Fact):
 
 # Delays
 class PreviousDelay(Fact):
+    pass
+
+
+class OtherStations(Fact):
     pass

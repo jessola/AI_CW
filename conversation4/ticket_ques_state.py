@@ -1,6 +1,7 @@
 from experta import *
 
 from questions import ask_question
+from validation import validate, suggest
 
 from .utilities import return_fact
 from .fact_types import *
@@ -23,18 +24,39 @@ class TicketQsStateRules:
     def more_info_required(self):
         if self.valid:
             self.valid = False
-            self.prompt_message(ask_question(self.next_ticket_q()))
+            self.prompt_message(
+                ask_question(self.next_ticket_q(), self.context))
 
     # Question is answered
     @Rule(
-        State(status='QUESTIONING'),
+        AS.state << State(status='QUESTIONING'),
         Task('TICKET'),
         AS.f << Fact(subject=MATCH.subject, value=MATCH.val),
     )
-    def answered_ticket_question(self, f, subject, val):
+    def answered_ticket_question(self, state, f, subject, val):
         self.retract(f)
 
-        # Validate
+        # Check for suggestions
+        sug = suggest(val, subject, self.context)
+        if sug:
+            self.just_suggested = True
+            self.state_message(sug['message'])
+            self.declare(Suggested(subject, sug['value']))
+            self.set_prev_state('QUESTIONING')
+            self.modify(state, status='SUGGESTING')
+            return
 
-        self.declare(return_fact(subject, val))
+        # Check for errors
+        error = validate(val, subject, self.context)
+        if error:
+            self.state_message(error)
+            return
+
+        new_fact = return_fact(subject, val)
+        self.declare(new_fact)
         self.mark_answered_ticket(subject)
+
+        # When it's a single ticket
+        if new_fact[0] == False:
+            self.declare(ReturnDate(None), ReturnTime(None))
+            self.mark_answered_ticket('return_date', 'return_time')
