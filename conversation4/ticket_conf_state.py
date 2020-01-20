@@ -33,7 +33,8 @@ class TicketConfRules:
                              ret):
         self.modify(state, status='CONFIRMING')
         self.prompt_message(
-            'So you want to travel from %s to %s on %s at %s?' % (
+            'So you want a %s ticket from %s to %s on %s at %s?' % (
+                'return' if ret is True else 'single',
                 dep_from,
                 dep_to,
                 dep_date,

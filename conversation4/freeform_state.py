@@ -77,8 +77,96 @@ class FreeformStateRules:
                     if topic == 'departure_time':
                         problems.append('what time you\'re leaving')
 
+            # Add an or between the last two problems
+            if len(problems) > 1:
+                last_problem = problems.pop()
+                problems[-1] = ' or '.join([problems[-1], last_problem])
+
             if len(problems) > 0:
                 message += ', '.join(problems) + '.'
+
+            return message
+        except Exception as e:
+            print(str(e))
+
+    # Prepare confirmation message
+    def output_confirmation(self, params, errors):
+        try:
+            # Escape condition
+
+            message = 'You\'re saying '
+            details = []
+
+            # Check which details have been specified
+            dep_from = params['departing_from'] if len(
+                params['departing_from'].strip(
+                )) > 0 and 'departing_from' not in errors else None
+            dep_to = params['departing_to'] if len(
+                params['departing_to'].strip(
+                )) > 0 and 'departing_to' not in errors else None
+            dep_date = params['departure_date'] if len(
+                params['departure_date'].strip(
+                )) > 0 and 'departure_date' not in errors else None
+            dep_time = params['departure_time'] if len(
+                params['departure_time'].strip(
+                )) > 0 and 'departure_time' not in errors else None
+            ret = params['returning'] if len(params['returning'].strip(
+            )) > 0 and 'returning' not in errors else None
+
+            # Departing to and from
+            if dep_from and dep_to:
+                _string = 'go from %s to %s' % (
+                    dep_from.title(),
+                    dep_to.title(),
+                )
+                if len(details) == 0:
+                    _string = 'you want to ' + _string
+
+                details.append(_string)
+            elif dep_from or dep_to:
+                d = dep_from or dep_to
+
+                _string = 'depart from %s' % d.title(
+                ) if dep_from else 'go to %s' % d.title()
+
+                if len(details) == 0:
+                    _string = 'you want to ' + _string
+
+                details.append(_string)
+
+            # Departure date and time
+            if dep_date and dep_time:
+                _string = 'leave at %s on %s' % (
+                    dep_date,
+                    dep_time,
+                )
+                if len(details) == 0:
+                    _string = 'you want to ' + _string
+
+                details.append(_string)
+            elif dep_date or dep_time:
+                d = dep_date or dep_time
+
+                _string = 'leave on %s' % d if dep_date else 'leave at %s' % d
+
+                if len(details) == 0:
+                    _string = 'you want to ' + _string
+
+                details.append(_string)
+
+            # Returning
+            if ret:
+                _string = 'you want a return ticket'
+
+                details.append(_string)
+
+            # Add an or between the last two details
+            if len(details) > 1:
+                last_detail = details.pop()
+                details[-1] = ' and '.join([details[-1], last_detail])
+
+            if len(details) > 0:
+                message += ', '.join(details) + '.'
 
             return message
         except Exception as e:
@@ -100,82 +188,18 @@ class FreeformStateRules:
             self.modify(state, status='SUGGESTING')
             return
 
-        # try:
-        #     sug = suggest(params['departing_from'], 'departing_from',
-        #                   self.context)
-        #     if sug and not self.just_suggested:
-        #         self.just_suggested = True
-        #         self.state_message('Do you mean %s?' % sug)
-        #         self.declare(Suggested('subject', sug))
-        #         # self.set_prev_state('FREEFORM')
-        #         self.modify(state, status='SUGGESTING')
-        #         return
-        # except Exception as e:
-        #     self.state_message(str(e))
-
         # Check for errors
         self.check_multi_errors(params, errors)
         if len(errors) > 0:
             self.state_message(self.output_error_message(params, errors))
-        # error = validate(params['departing_from'], 'departing_from',
-        #                  self.context)
-        # if error:
-        #     self.state_message(error)
-        #     errors.append('departing_from')
 
-        # self.retract(params)
-
-        sentence = 'You want to '
-
-        # TODO: Create a nicer method for this
-        # Set up the message
-        str_departing_from = 'go from {}'.format(
-            params['departing_from']
-        ) if params[
-            'departing_from'] and 'departing_from' not in errors != '' else None
-
-        str_departing_to = 'go to {}'.format(params['departing_to']) if params[
-            'departing_to'] != '' and 'departing_to' not in errors else None
-
-        str_departure_date = 'travel on {}'.format(
-            params['departure_date']
-        ) if params['departure_date'] != '' else None
-
-        str_dep_time = 'leave at {}'.format(
-            params['departure_time']
-        ) if params['departure_time'] != '' else None
-
-        # Stitch them together
-        segments = []
-        if str_departing_from is not None and 'departing_from' not in errors:
-            segments.append(str_departing_from)
-
-        if str_departing_to is not None:
-            segments.append(str_departing_to)
-
-        if str_departure_date is not None:
-            segments.append(str_departure_date)
-
-        if str_dep_time is not None:
-            segments.append(str_dep_time)
-
-        last_two_words = segments[-2:] if len(segments) > 1 else []
-        segments = ', '.join(segments[0:-2])
-        if len(segments.split(', ')) < 2:
-            segments += ', '
-        last_two_words = ' and '.join(last_two_words)
-
-        sentence += segments + last_two_words + '.'
-        # End of message formatting logic
-
-        # self.declare(Task('TICKET'))
         try:
             self.declare_multi_facts(params, errors)
         except Exception as e:
             print(str(e))
 
         self.retract(params)
-        self.state_message(sentence)
+        self.state_message(self.output_confirmation(params, errors))
         self.prompt_message('Is this correct?')
 
         # self.modify(state, status=self.prev_state)

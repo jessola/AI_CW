@@ -35,3 +35,5 @@ def suggest(value, option, context=None):
     # Departing from and to
     if option in ['departing_from', 'departing_to']:
         return suggest_dep_to_from(value, context)
+
+    return None
