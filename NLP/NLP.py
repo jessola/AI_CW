@@ -4,6 +4,8 @@ from spacy.symbols import prep
 nlp = spacy.load('en_core_web_lg')
 
 input = "I want a ticket from norwich to ely at 2:00pm on the 17th"
+
+
 def inputNLP():
 
     doc = nlp(input)
@@ -19,9 +21,8 @@ def inputNLP():
         "returning": None,
         "return_condition": None,
         "return_date": None,
-        "return_time" : None  
+        "return_time": None
     }
-
     """for ent in doc.ents:
         print(ent.text, ent.label_)"""
 
@@ -42,21 +43,16 @@ def inputNLP():
 
         #find departure condition or time
         if ent.label_ == "TIME":
-            if ent.start != 0: 
+            if ent.start != 0:
                 prev_token1 = doc[ent.start - 1]
                 prev_token2 = doc[ent.start - 2]
-                if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
+                if prev_token1.dep == prep and prev_token2.lemma_ in ("arrive",
+                                                                      "there"):
                     ticketdict.update({"departure_condtion": ent.text})
-                else:  
-                    ticketdict.update({"departure_time": ent.text})   
-
-                    
-
-        
-    
-
-
+                else:
+                    ticketdict.update({"departure_time": ent.text})
 
     print(ticketdict)
+
 
 inputNLP()
