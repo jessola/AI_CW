@@ -2,6 +2,7 @@ from experta import *
 
 from questions import ask_question
 from validation import validate, suggest
+from railway.station import get_station_by_alias
 
 from .utilities import return_fact
 from .fact_types import *
@@ -35,6 +36,15 @@ class TicketQsStateRules:
     )
     def answered_ticket_question(self, state, f, subject, val):
         self.retract(f)
+
+        # When dealing with stations
+        try:
+            if subject in ['departing_from', 'departing_to']:
+                actual_station = get_station_by_alias(val)
+                if actual_station:
+                    val = actual_station
+        except Exception as e:
+            self.state_message(str(e))
 
         # Check for suggestions
         sug = suggest(val, subject, self.context)

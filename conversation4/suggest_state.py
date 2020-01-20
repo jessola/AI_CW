@@ -31,6 +31,13 @@ class SuggestionStateRules:
             for fact in to_delete:
                 self.retract(fact)
 
+            # Update the database
+            try:
+                self.state_message('UPDATED')
+                add_alias(sug[1], sug[2])
+            except Exception as e:
+                self.state_message('THIS ERROR', str(e))
+
             self.declare(Fact(subject=sug[0], value=sug[1]))
             self.retract(sug)
             self.retract(f)

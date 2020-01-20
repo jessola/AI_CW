@@ -59,7 +59,7 @@ def inputNLP(input, returningInput=None):
                                           hour=0,
                                           minute=0,
                                           second=0).strftime('%d%m%y')
-                ticketdict.update({"return_date": depdate})
+                ticketdict.update({"departure_date": depdate})
 
             #find departure condition or time
             if ent.label_ == "TIME":
@@ -125,9 +125,3 @@ def inputNLP(input, returningInput=None):
                         ticketdict.update({"departure_time": out_time})
 
     return ticketdict
-
-
-print(
-    inputNLP(
-        "I want a ticket from norwich to ely and i want to arrive at 2:00pm on the 17th and return on the 18th and leave at 6:00pm "
-    ))

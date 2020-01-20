@@ -84,6 +84,30 @@ def get_station(name):
     return Station.objects(name__iexact=name)
 
 
+def get_station_by_alias(alias):
+    """Get the station based on any of its aliases
+    
+    Arguments:
+        alias {str} -- Another name or mispelling of the station
+    
+    Returns:
+        str -- The actual name of the station
+    """
+    if not alias:
+        return None
+
+    try:
+        station = Station.objects(aliases__icontains=alias.lower())[0] or None
+
+        if not station:
+            return
+        else:
+            return station['name'].title()
+    except Exception as e:
+        print(str(e))
+        return None
+
+
 def add_alias(station, new_alias):
     """Adds a new alias for a given station.
     
