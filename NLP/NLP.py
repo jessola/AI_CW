@@ -51,7 +51,11 @@ def inputNLP(input, returningInput=None):
 
             #find departure date
             if ent.label_ == "DATE":
-                ticketdict.update({"departure_date": ent.text})
+                date = ent.text_
+                date = re.sub("[^0-9]", '', date)
+                datenew = datetime.now()
+                depdate = datenew.replace(day = int(date), hour = 0, minute = 0, second = 0).strftime('%d%m%y')
+                ticketdict.update({"return_date": depdate})
 
             #find departure condition or time
             if ent.label_ == "TIME":
@@ -88,7 +92,11 @@ def inputNLP(input, returningInput=None):
 
             #find return date
             if ent.label_ == "DATE":
-                ticketdict.update({"return_date": ent.text})
+                date = ent.text_
+                date = re.sub("[^0-9]", '', date)
+                datenew = datetime.now()
+                depdate = datenew.replace(day = int(date), hour = 0, minute = 0, second = 0).strftime('%d%m%y')
+                ticketdict.update({"return_date": depdate})
 
             #find return condition or time
             if ent.label_ == "TIME":
