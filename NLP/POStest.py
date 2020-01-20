@@ -13,4 +13,9 @@ import re
 
 date = "the 17th"
 date = re.sub("[^0-9]", '', date)
-print(date)
+datenew = datetime.now()
+depdate = datenew.replace(day = int(date), hour = 0, minute = 0, second = 0).strftime('%d%m%y')
+print(depdate)
+
+
+
