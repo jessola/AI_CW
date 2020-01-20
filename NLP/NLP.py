@@ -50,7 +50,7 @@ def inputNLP(input, returningInput = None):
 
             #find departure date
             if ent.label_ == "DATE":
-                date = ent.text_
+                date = ent.text
                 date = re.sub("[^0-9]", '', date)
                 datenew = datetime.now()
                 depdate = datenew.replace(day = int(date), hour = 0, minute = 0, second = 0).strftime('%d%m%y')
@@ -89,7 +89,7 @@ def inputNLP(input, returningInput = None):
 
             #find return date
             if ent.label_ == "DATE":
-                date = ent.text_
+                date = ent.text
                 date = re.sub("[^0-9]", '', date)
                 datenew = datetime.now()
                 depdate = datenew.replace(day = int(date), hour = 0, minute = 0, second = 0).strftime('%d%m%y')
