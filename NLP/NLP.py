@@ -61,12 +61,12 @@ def inputNLP(returningInput = None):
                         ticketdict.update({"departure_time": ent.text})
 
         #find num_adults
-        if ent.label_ == "CARDINAL" and ent.start != doc.end.i:
+        if ent.label_ == "CARDINAL" and ent.start != len(doc) - 1:
             next_token = doc[ent.start + 1]
             if  next_token.lemma_ in ("adult"):
                 ticketdict.update({"num_adults": ent.text})
         #find num_children
-        if ent.label_ == "CARDINAL" and ent.start != doc.end.i:
+        if ent.label_ == "CARDINAL" and ent.start != len(doc) - 1:
             next_token = doc[ent.start + 1]
             if  next_token.lemma_ in ("child", "kid"):
                 ticketdict.update({"num_children": ent.text})
