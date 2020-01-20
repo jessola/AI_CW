@@ -1,6 +1,7 @@
 from experta import *
 
 from .fact_types import *
+from NLP.NLP import inputNLP
 
 
 class InputRules:
@@ -27,6 +28,8 @@ class InputRules:
     def check_for_freefrom(self, text, state):
         # TODO: Logic for determining freeform input
         details = text[0].split(', ')
+        details2 = inputNLP(text[0])
+
         params = {
             'dep_from': None,
             'dep_to': None,
@@ -35,13 +38,20 @@ class InputRules:
             'returning': None,
         }
 
-        if len(details) > 1:
-            for i, detail in enumerate(details):
-                try:
-                    if detail.strip() != '0':
-                        params.update({list(params.keys())[i]: detail})
-                except:
-                    continue
+        if details2['departing_from'] or details2['departing_to']:
+            dep_from = details2['departing_from'] or None
+            dep_to = details2['departing_to'] or None
+            # for i, detail in enumerate(details):
+            # try:
+            #     if detail.strip() != '0':
+            #         params.update({list(params.keys())[i]: detail})
+            # except:
+            #     continue
+            if dep_from:
+                params['dep_from'] = dep_from
+
+            if dep_to:
+                params['dep_to'] = dep_to
 
             self.declare(
                 FreeformTicket(
@@ -56,6 +66,28 @@ class InputRules:
             self.set_prev_state(state['status'])
             self.modify(state, status='FREEFORM')
 
+        # if len(details) > 1:
+        #     for i, detail in enumerate(details):
+        #         try:
+        #             if detail.strip() != '0':
+        #                 params.update({list(params.keys())[i]: detail})
+        #         except:
+        #             continue
+
+        #     self.declare(
+        #         FreeformTicket(
+        #             departing_from=params['dep_from'] or '',
+        #             departing_to=params['dep_to'] or '',
+        #             departure_date=params['dep_date'] or '',
+        #             departure_time=params['dep_time'] or '',
+        #             returning=params['returning'] or '',
+        #         ))
+
+        #     self.retract_input(text)
+        #     self.set_prev_state(state['status'])
+        #     self.modify(state, status='FREEFORM')
+
+    # Ticket questioning
     @Rule(
         AS.text << Input(W()),
         AS.state << State(status=W()),

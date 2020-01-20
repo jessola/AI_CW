@@ -34,10 +34,9 @@ def inputNLP(input, returningInput=None):
 
     for ent in doc.ents:
 
-        #finding dep_to and dep_from
-        #Need to add conditions for if location has no previous tokens
-        if (returning == None or returningInput == None) or (
-                returning or returningInput and ent.start < tokenReturning):
+        if (returning == None
+                or returninginput == None) or returningInput == True or (
+                    returning == True and ent.start < tokenReturning):
             if ent.label_ == "GPE":
                 if ent.start != 0:
                     prev_token = doc[ent.start - 1]
@@ -72,7 +71,8 @@ def inputNLP(input, returningInput=None):
             if next_token.lemma_ in ("child", "kid"):
                 ticketdict.update({"num_children": ent.text})
 
-        if returning or returningInput and ent.start > tokenReturning:
+        if (returning == True
+                and ent.start > tokenReturning) or returninginput == True:
 
             #find return date
             if ent.label_ == "DATE":
