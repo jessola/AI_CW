@@ -24,8 +24,9 @@ questions_ticket = [
 ]
 
 questions_delay = [
-    'departing_from',
-    'departing_to',
+    'starting',
+    'destination',
+    'other_stations',
     'departure_date',
     'departure_time',
     'previous_delay',

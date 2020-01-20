@@ -40,6 +40,10 @@ def station_to_station_time(a, b):
         'stratford_london': 10,
     }
 
+    # London Liverpool Street edge case
+    if b.lower() == 'london liverpool street':
+        b = 'london'
+
     key = '{}_{}'.format(a.lower(), b.lower())
     if key not in times.keys():
         return None
@@ -88,12 +92,19 @@ def make_prediction(start, delay, *stations):
 
     stops = get_travel_times(*stations)['stop_times']
 
-    # print(get_travel_times(*stations)['total'])
+    # # London Liverpool Street edge case
+    # for station in stations:
+    #     if station.lower() == 'london liverpool street':
+    #         station = 'london'
 
     for i, station in enumerate(stations[1:]):
+        # London edge case
+        if station.lower() == 'london liverpool street':
+            station = 'london'
+
         arr_pred = model(station, False).predict([[1, dep_delays[-1]]])[0]
         dep_pred = None
-        if station.lower() != 'london':
+        if station.lower() not in ['london', 'london liverpool street']:
             dep_pred = model(station).predict([[1, dep_delays[-1]]])[0]
 
         # Calculate the new resultant delay
@@ -110,9 +121,11 @@ def make_prediction(start, delay, *stations):
         act = datetime.strptime(arr_time, '%H:%M')
         pla = datetime.strptime(pla_time, '%H:%M')
         delay = int((act - pla).total_seconds() / 60)
+        location = 'London Liverpool Street' if station.lower(
+        ) == 'london' else station.title()
 
         info.append({
-            'location': station,
+            'location': location,
             'pla_a': pla_time,
             'act_a': arr_time,
             'del': delay,

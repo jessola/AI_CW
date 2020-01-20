@@ -37,15 +37,14 @@ class TicketQsStateRules:
         self.retract(f)
 
         # Check for suggestions
-        if not self.just_suggested:
-            sug = suggest(val, subject, self.context)
-            if sug:
-                self.just_suggested = True
-                self.state_message('Do you mean %s?' % sug)
-                self.declare(Suggested(subject, sug))
-                self.set_prev_state('QUESTIONING')
-                self.modify(state, status='SUGGESTING')
-                return
+        sug = suggest(val, subject, self.context)
+        if sug:
+            self.just_suggested = True
+            self.state_message(sug['message'])
+            self.declare(Suggested(subject, sug['value']))
+            self.set_prev_state('QUESTIONING')
+            self.modify(state, status='SUGGESTING')
+            return
 
         # Check for errors
         error = validate(val, subject, self.context)

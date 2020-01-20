@@ -1,6 +1,17 @@
 from railway.station import get_stations, get_station
 
-# Check whether
+# Valid stations for delay prediction
+valid_delay_stations = [
+    'norwich',
+    'diss',
+    'stowmarket',
+    'ipswich',
+    'manningtree',
+    'colchester',
+    'chelmsford',
+    'stratford',
+    'london liverpool street',
+]
 
 
 def format_stations(stations):
@@ -84,19 +95,72 @@ def suggest_dep_to_from(station, context=None):
     suggested = None
 
     # TODO: proper spelling validation
-    if station.lower() == 'noriwch':
-        suggested = 'Norwich'
+    if station.lower() in ['noriwch', 'uea', 'norrich']:
+        suggested = {
+            'message': 'When you say "%s", do you mean Norwich?' % station,
+            'value': 'Norwich'
+        }
         return suggested
 
     if station.lower() == 'manny':
-        suggested = 'Manchester'
+        suggested = {
+            'message': 'When you say "%s", do you mean Manchester?' % station,
+            'value': 'Manchester'
+        }
         return suggested
 
-    if 'uea' in station.lower():
-        suggested = 'Norwich'
-        return suggested
+    # Handle details being resubmitted without being formally retracted
+    try:
+        if context:
+            dep_from = context['departing_from'] or None
+            dep_to = context['departing_to'] or None
+
+            # Departing From
+            if context['answering'] == 'departing_from' and dep_from:
+                suggested = {
+                    'message':
+                    'Are you sure you want to depart from {} instead of {}?'.
+                    format(station.title(), dep_from.title()),
+                    'value':
+                    station
+                }
+
+            # Departing To
+            if context['answering'] == 'departing_to' and dep_to:
+                suggested = {
+                    'message':
+                    'Are you sure you want to go to {} instead of {}?'.format(
+                        station.title(), dep_from.title()),
+                    'value':
+                    station
+                }
+    except Exception as e:
+        print(str(e))
 
     return suggested
+
+
+def validate_start_dest(station, context=None):
+    """Checks that the stations the user wishes to travel between actually
+    exist. Also check that they are for journies between Norwich and London
+    Liverpool Street.
+    
+    Arguments:
+        station {str} -- Station name as typed by the user.
+    
+    Returns:
+        dict -- The error message
+    """
+
+    # Perform default station check
+    if validate_dep_to_from(station):
+        return validate_dep_to_from(station)
+
+    # Make sure station is valid
+    if station.lower() not in valid_delay_stations:
+        return 'I can only help you if you are travelling between Norwich and London Liverpool Street, I\'m afraid.'
+
+    return None
 
 
 # if __name__ == '__main__':

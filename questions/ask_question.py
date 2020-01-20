@@ -3,11 +3,13 @@ from .ask_departing_to import ask_departing_to
 from .ask_departure_condition import ask_departure_condition
 from .ask_departure_date import ask_departure_date
 from .ask_departure_time import ask_departure_time
+from .ask_destination import ask_destination
 from .ask_num_adults import ask_num_adults
 from .ask_num_children import ask_num_children
 from .ask_returning import ask_returning
 from .ask_return_date import ask_return_date
 from .ask_return_time import ask_return_time
+from .ask_starting import ask_starting
 from .ask_travelling_alone import ask_travelling_alone
 
 
@@ -36,6 +38,9 @@ def ask_question(topic, context=None):
     elif topic == "departure_time":
         question = ask_departure_time(context)
 
+    elif topic == 'destination':
+        question = ask_destination(context)
+
     elif topic == "num_adults":
         question = ask_num_adults()
 
@@ -53,6 +58,9 @@ def ask_question(topic, context=None):
 
     elif topic == "return_time":
         question = ask_return_time()
+
+    elif topic == 'starting':
+        question = ask_starting()
 
     elif topic == "travelling_alone":
         question = ask_travelling_alone()

@@ -21,6 +21,15 @@ class SuggestionStateRules:
             self.retract(f)
             self.modify(state, status=self.prev_state)
         else:
+            to_delete = []
+
+            for fact in self.facts.values():
+                if isinstance(fact, type(return_fact(sug[0]))):
+                    to_delete.append(fact)
+
+            for fact in to_delete:
+                self.retract(fact)
+
             self.declare(Fact(subject=sug[0], value=sug[1]))
             self.retract(sug)
             self.retract(f)
@@ -37,8 +46,15 @@ class SuggestionStateRules:
             self.modify(state, status='FREEFORM')
 
         else:
-            # self.declare(Fact(subject=sug[0], value=sug[1]))
-            self.modify(free, dep_from=sug[1])
+            to_delete = []
+
+            for fact in self.facts.values():
+                if isinstance(fact, type(return_fact(sug[0]))):
+                    to_delete.append(fact)
+
+            for fact in to_delete:
+                self.retract(fact)
+            self.modify(free, departing_from=sug[1])
             self.retract(sug)
             self.retract(f)
             self.modify(state, status='FREEFORM')

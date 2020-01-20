@@ -1,8 +1,9 @@
 from experta import *
 from datetime import datetime
+import re
 
 from questions import ask_question
-from validation import validate
+from validation import validate, valid_delay_stations as vds
 
 from .utilities import return_fact
 from .fact_types import *
@@ -16,8 +17,9 @@ class DelayConfRules:
     # There is sufficient information
     @Rule(AS.state << State(status='QUESTIONING'), Task('DELAY'),
           AND(
-              DepartingFrom(MATCH.dep_from),
-              DepartingTo(MATCH.dep_to),
+              DepartingFrom(MATCH.start),
+              DepartingTo(MATCH.dest),
+              OtherStations(MATCH.other),
               DepartureDate(MATCH.dep_date),
               DepartureTime(MATCH.dep_time),
               PreviousDelay(MATCH.prev_delay),
@@ -25,36 +27,47 @@ class DelayConfRules:
     def predict_delay(
         self,
         state,
-        dep_from,
-        dep_to,
+        start,
+        dest,
+        other,
         dep_date,
         dep_time,
         prev_delay,
     ):
-        start_date = datetime.strptime(dep_date + dep_time, '%d%m%y%H%M')
-        pred = make_prediction(
-            start_date,
-            int(prev_delay),
-            'Norwich',
-            'Diss',
-            'Stowmarket',
-            'Ipswich',
-            'Manningtree',
-            'Colchester',
-            'London',
-        )
+        try:
+            # Travel Date
+            start_date = datetime.strptime(dep_date + dep_time, '%d%m%y%H%M')
 
-        pred = {
-            'stops':
-            pred,
-            'message':
-            'You should reach {} at {}, {} minutes later than originally scheduled.'
-            .format(
-                dep_to.title(),
-                pred[-1]['act_a'],
-                pred[-1]['del'],
-            )
-        }
-        pred_str = str(pred).replace("'", '"')
+            # Get the information about the stations user is going through
+            other = re.sub('[^a-zA-Z\s]', '', other)
+            other = re.sub('(\s\s+|\sand\s)', ' ', other)
 
-        self.state_message(pred_str)
+            # TODO: Add some validation
+            other_stations = [stop.lower() for stop in other.split(' ')]
+            stops = [
+                stop for stop in vds if stop.lower() in other_stations
+                or stop.lower() in [start.lower(), dest.lower()]
+            ]
+
+            pred = make_prediction(start_date, int(prev_delay), *stops)
+
+            pred_dict = {
+                'stops':
+                pred,
+                'message':
+                'You should reach {} at {}, {} minutes later than originally scheduled.'
+                .format(
+                    dest.title(),
+                    pred[-1]['act_a'],
+                    pred[-1]['del'],
+                )
+            }
+            pred_str = str(pred_dict).replace("'", '"')
+
+            self.state_message(pred_str)
+        except Exception as e:
+            self.state_message(str(e))
+            self.retract([
+                f for f in self.facts.values() if isinstance(f, OtherStations)
+            ][0])
+            self.delay_questions.insert(0, 'other_stations')
