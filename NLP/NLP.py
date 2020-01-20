@@ -148,4 +148,5 @@ def predictionNLP(input):
                         ticketdict.update({"departing_to": ent.text})
 
     return predictiondict
+    
 print(predictionNLP("My train was delayed for 50 minutes can you tell me when ill reach my destination"))
