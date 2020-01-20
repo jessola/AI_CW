@@ -88,4 +88,4 @@ def inputNLP(input, returningInput = None):
                         ticketdict.update({"return_time": ent.text})
     return ticketdict
 
-print(inputNLP)
+print(inputNLP("I want a ticket from norwich to ely at 2:00pm on the 17th and return on the 18th and get there by 6:00pm"))
