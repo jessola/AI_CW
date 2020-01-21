@@ -3,6 +3,7 @@ from experta import *
 from questions import ask_question
 from validation import validate, suggest
 from railway.station import get_station_by_alias
+from NLP.NLP import dateFormat2
 
 from .utilities import return_fact
 from .fact_types import *
@@ -44,7 +45,14 @@ class TicketQsStateRules:
                 if actual_station:
                     val = actual_station
         except Exception as e:
-            self.state_message(str(e))
+            self.state_message('I couldn\'t find any stations by that name')
+
+        # When dealing with dates
+        try:
+            if subject in ['departure_date', 'return_date']:
+                actual_date = dateFormat2(val)
+        except Exception as e:
+            print(str(e))
 
         # Check for suggestions
         sug = suggest(val, subject, self.context)
