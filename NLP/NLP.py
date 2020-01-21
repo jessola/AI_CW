@@ -107,8 +107,7 @@ def inputNLP(input, returningInput=None):
         for token in doc:
             #try to find missed out departure times
             if (returning == True and token.i < tokenReturning) or (
-                    returningInput == True) or (returning != True
-                                                and returningInput != True):
+                    returning != True and returningInput != True):
                 if (re.search('\d{,2}:\d{,2}', token.text) is not None):
                     if ent.start != 0:
                         prev_token1 = doc[ent.start - 1]
@@ -131,29 +130,26 @@ def inputNLP(input, returningInput=None):
     #if there are missing values for return ticket when return is specified try to look
     if (ticketdict.get("return_date") == None) or (
             ticketdict.get("return_time") == None):
-        if (ticketdict.get("returning") == True) or returningInput == True:
-            for token in doc:
-                #find the return time and aswell if missing
-                if (returning == True and
-                        token.i > tokenReturning) or returningInput == True:
-                    if (re.search('\d{,2}:\d{,2}', token.text) is not None):
-                        if ent.start != 0:
-                            prev_token1 = doc[ent.start - 1]
-                            prev_token2 = doc[ent.start - 2]
-                            if prev_token1.dep == prep and prev_token2.lemma_ in (
-                                    "arrive", "there"):
-                                ticketdict.update({"return_condition": "arr"})
-                                ticketdict.update(
-                                    {"return_time": timeFormat(token.text)})
-                            else:
-                                ticketdict.update({"return_condition": "dep"})
-                                ticketdict.update(
-                                    {"return_time": timeFormat(token.text)})
+        for token in doc:
+            #find the return time and aswell if missing
+            if (returning == True
+                    and token.i > tokenReturning) or returningInput == True:
+                if (re.search('\d{,2}:\d{,2}', token.text) is not None):
+                    if ent.start != 0:
+                        prev_token1 = doc[ent.start - 1]
+                        prev_token2 = doc[ent.start - 2]
+                        if prev_token1.dep == prep and prev_token2.lemma_ in (
+                                "arrive", "there"):
+                            ticketdict.update({"return_condition": "arr"})
+                            ticketdict.update(
+                                {"return_time": timeFormat(token.text)})
+                        else:
+                            ticketdict.update({"return_condition": "dep"})
+                            ticketdict.update(
+                                {"return_time": timeFormat(token.text)})
 
-                    if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is
-                            not None):
-                        ticketdict.update(
-                            {"return_date": dateFormat2(token.text)})
+                if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None):
+                    ticketdict.update({"return_date": dateFormat2(token.text)})
 
     return ticketdict
 
@@ -240,5 +236,5 @@ def dateFormat2(input):
 
 print(
     inputNLP(
-        "I want a ticket on the 15/01/20 from Norwich to Cambridge arriving at 5:00pm and i want a return ticket for the 18/01 leaving at 14:00"
+        "I want a ticket on the 15/01/20 from Norwich to Cambridge arriving at 5:00pm and i want a return ticket for the 18/01/20 leaving at 14:00"
     ))
