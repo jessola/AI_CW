@@ -108,7 +108,7 @@ def inputNLP(input, returningInput = None):
                             ticketdict.update({"departure_condition": "dep"})
                             ticketdict.update({"departure_time": timeFormat(token.text)})
             #or try to find out missing date time       
-            if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None) and ((returning == True and token.i > tokenReturning) or returningInput == True):
+            if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None):
                 #add formatting for dd/mm/yy here
                 ticketdict.update({"departure_date": dateFormat2(token.text)})
     
@@ -128,7 +128,7 @@ def inputNLP(input, returningInput = None):
                                 ticketdict.update({"return_condition": "dep"})  
                                 ticketdict.update({"return_time": timeFormat(token.text)})
 
-            if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None) and ((returning == True and token.i > tokenReturning) or returningInput == True):
+            if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None):
                 ticketdict.update({"return_date": dateFormat2(token.text)})
 
     return ticketdict
