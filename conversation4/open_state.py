@@ -1,6 +1,6 @@
 from experta import *
 
-from .fact_types import State, Task
+from .fact_types import State, Task, Input
 from .utilities import return_fact
 from questions import ask_question
 
@@ -48,3 +48,10 @@ class OpenStateRules:
     def predicting_delay(self, f):
         # self.state_message('Can\'t do this yet.')
         self.modify(f, status='QUESTIONING')
+
+    # # Finish
+    # @Rule(AS.f << State(status='OPEN'), ~Task(), AS.text << Input(W()))
+    # def end(self, f):
+    #     if 'nope' in text[0].lower():
+    #         self.state_message('Okay, goodbye!')
+    #         self.modify(f, status='END')

@@ -11,10 +11,10 @@ def validate_previous_delay(minutes, context=None):
 
     # Check that there is a valid date string
     pattern = "[0-9]"
-    fmt_time = re.search(pattern, time)
-    extra = re.sub(pattern, '', time)
+    fmt_minutes = re.search(pattern, minutes)
+    extra = re.sub(pattern, '', minutes)
 
-    if fmt_time is None:
-        error = 'I can\'t understand what you mean by {}.'.format(time)
+    if fmt_minutes is None:
+        error = 'I can\'t understand what you mean by {}.'.format(minutes)
 
     return error

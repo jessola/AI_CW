@@ -143,6 +143,11 @@ class FreeformStateRules:
                 params['return_time'].strip(
                 )) > 0 and 'return_time' not in errors else None
 
+            # Escape condition
+            if (not dep_from and not dep_to and not dep_date and not dep_time
+                    and not ret and not ret_date and not ret_time):
+                return None
+
             # Departing to and from
             if dep_from and dep_to:
                 _string = 'go from %s to %s' % (
@@ -257,7 +262,13 @@ class FreeformStateRules:
             self.state_message(str(e))
 
         self.retract(params)
-        self.state_message(self.output_confirmation(params, errors))
+        output_message = self.output_confirmation(params, errors)
+
+        if not output_message:
+            self.modify(state, self.prev_state or 'QUESTIONING')
+            return
+
+        self.state_message(output_message)
         self.prompt_message('Is this correct?')
 
         # self.modify(state, status=self.prev_state)

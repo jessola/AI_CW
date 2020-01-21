@@ -34,23 +34,21 @@ class DelayQsStateRules:
         AS.f << Fact(subject=MATCH.subject, value=MATCH.val),
     )
     def answered_delay_question(self, f, subject, val):
-        self.retract(f)
+        try:
+            self.retract(f)
 
-        # Previous delay
-        if subject == 'previous_delay':
-            val = re.sub('[^0-9]', '', val)
+            # Previous delay
+            if subject == 'previous_delay':
+                val = re.sub('[^0-9]', '', val)
 
-        # Validate
-        error = validate(val, subject)
-        if error:
-            self.state_message(error)
-            return
+            # Validate
+            error = validate(val, subject)
+            if error:
+                self.state_message(error)
+                return
 
-        new_fact = return_fact(subject, val)
-        self.declare(new_fact)
-        self.mark_answered_delay(subject)
-
-        # # When it's a single ticket
-        # if new_fact[0] == False:
-        #     self.declare(ReturnDate(None), ReturnTime(None))
-        #     self.mark_answered_ticket('return_date', 'return_time')
+            new_fact = return_fact(subject, val)
+            self.declare(new_fact)
+            self.mark_answered_delay(subject)
+        except Exception as e:
+            self.state_message(str(e))

@@ -111,6 +111,14 @@ def suggest_dep_to_from(station, context=None):
         }
         return suggested
 
+    if station.lower() in ['loddon', 'lodnon', 'lodnod']:
+        suggested = {
+            'message': 'When you say "%s", do you mean London?' % station,
+            'value': 'London',
+            'original': station.lower(),
+        }
+        return suggested
+
     # Handle details being resubmitted without being formally retracted
     try:
         if context:
