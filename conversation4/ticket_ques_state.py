@@ -3,7 +3,7 @@ from experta import *
 from questions import ask_question
 from validation import validate, suggest
 from railway.station import get_station_by_alias
-from NLP.NLP import dateFormat2
+from NLP.NLP import dateFormat2, timeFormat
 
 from .utilities import return_fact
 from .fact_types import *
@@ -51,6 +51,15 @@ class TicketQsStateRules:
         try:
             if subject in ['departure_date', 'return_date']:
                 actual_date = dateFormat2(val)
+                val = actual_date
+        except Exception as e:
+            print(str(e))
+
+        # When dealing with times
+        try:
+            if subject in ['departure_time', 'return_time']:
+                actual_time = dateFormat2(val)
+                val = actual_time
         except Exception as e:
             print(str(e))
 
