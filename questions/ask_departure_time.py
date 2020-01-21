@@ -7,7 +7,7 @@ def ask_departure_time(context=None):
   """
 
     options = [
-        'When are you leaving?',
+        'What time are you leaving?',
         'What time do you want to depart?',
     ]
 

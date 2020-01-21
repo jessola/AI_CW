@@ -1,3 +1,4 @@
+import re
 from mongoengine import *
 
 from railway.scraping import get_railway_stations
@@ -136,3 +137,75 @@ def get_station_by_code(code):
     """
 
     return Station.objects(code=code)[0]
+
+
+def find_most_similar(user_input):
+    """Finds the station most similar to what was written, or none
+    
+    Arguments:
+        station {str} -- The search string
+    
+    Returns:
+        str -- Name of the station most similar
+    """
+    user_input = user_input.lower()
+    first = user_input[0]
+
+    # Subset of all stations that start with the first typed letter
+    subset = [
+        s['name'].lower() for s in get_stations(first)
+        if s['name'][0].lower() == first
+    ]
+
+    lhs = re.sub('[^a-zA-Z]', '', user_input)
+    lhs = re.sub('[aeiou]', '', lhs)
+
+    if len(subset) == 0:
+        return None
+
+    # Check for exact matches
+    for station in subset:
+        rhs = re.sub('[^a-zA-Z]', '', station)
+        rhs = re.sub('[aeiou]', '', rhs)
+
+        if lhs in rhs:
+            return station.title()
+
+    # More obscure matches
+    for station in subset:
+        lhs = re.sub('[^a-zA-Z]', '', user_input)
+        rhs = re.sub('[^a-zA-Z]', '', station)
+        # rhs = re.sub('[aeiou]', '', rhs)
+
+        marked_letters = []
+        matches = 0
+        misses = 0
+
+        for i, letter in enumerate(rhs):
+            try:
+                if i <= 9:
+                    # Check which consonants appear in both
+                    if letter not in marked_letters:
+                        if letter in lhs:
+                            matches += 1
+                        else:
+                            misses += 1
+
+                    # Add it to marked list
+                    if letter not in marked_letters:
+                        marked_letters.append(letter)
+            except Exception as e:
+                print(str(e))
+
+        # Check the ratio & conditionally return the station
+        try:
+            if matches / (matches + misses) > 0.8:
+                return station.title()
+        except Exception as e:
+            print(str(e))
+
+    return None
+
+
+if __name__ == '__main__':
+    print(find_most_similar(input('Enter a station:\t')))
