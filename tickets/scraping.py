@@ -85,6 +85,8 @@ def find_cheapest_ticket(dep_from,
         'departing_from': format_output(output_dep_from),
         'departing_to': format_output(output_dep_to),
         'price': format_output(output_price)[1:],  # remove the currency symbol
+        'ticket_type': "rtn" if ret_date is not None else 'sgl',
+        'ticket_url': 'none',
         # 'returning': True if ret_date else False
     }
 

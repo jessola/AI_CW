@@ -1,7 +1,8 @@
 from experta import *
+import re
 
 from .fact_types import *
-from NLP.NLP import inputNLP
+from NLP.NLP import inputNLP, predictionNLP
 
 
 class InputRules:
@@ -25,9 +26,7 @@ class InputRules:
 
     # Check for free form input
     @Rule(AS.text << Input(), AS.state << State(), ~Task('DELAY'), salience=1)
-    def check_for_freefrom(self, text, state):
-        # TODO: Logic for determining freeform input
-        # details = text[0].split(', ')
+    def check_for_freeform(self, text, state):
         details = inputNLP(text[0])
 
         params = {
@@ -36,14 +35,21 @@ class InputRules:
             'dep_date': None,
             'dep_time': None,
             'returning': None,
+            'ret_date': None,
+            'ret_time': None,
         }
 
-        if details['departing_from'] or details['departing_to']:
+        if (details['departing_from'] or details['departing_to']
+                or details['departure_date'] or details['departure_time']
+                or details['returning'] or details['return_date']
+                or details['return_time']):
             dep_from = details['departing_from'] or None
             dep_to = details['departing_to'] or None
             dep_date = details['departure_date'] or None
             dep_time = details['departure_time'] or None
             ret = details['returning'] or None
+            ret_date = details['return_date'] or None
+            ret_time = details['return_time'] or None
 
             if dep_from:
                 params['dep_from'] = dep_from
@@ -55,6 +61,10 @@ class InputRules:
                 params['dep_time'] = dep_time
             if ret:
                 params['ret'] = 'yes' if ret else 'no'
+            if ret_date:
+                params['ret_date'] = ret_date
+            if ret_time:
+                params['ret_time'] = ret_time
 
             self.declare(
                 FreeformTicket(
@@ -63,32 +73,60 @@ class InputRules:
                     departure_date=params['dep_date'] or '',
                     departure_time=params['dep_time'] or '',
                     returning=params['returning'] or '',
+                    return_date=params['ret_date'] or '',
+                    return_time=params['ret_time'] or '',
                 ))
 
             self.retract_input(text)
             self.set_prev_state(state['status'])
             self.modify(state, status='FREEFORM')
 
-        # if len(details) > 1:
-        #     for i, detail in enumerate(details):
-        #         try:
-        #             if detail.strip() != '0':
-        #                 params.update({list(params.keys())[i]: detail})
-        #         except:
-        #             continue
+    # Freeform input on the delay prediction task
+    @Rule(AS.text << Input(), AS.state << State(), Task('DELAY'), salience=1)
+    def check_for_freeform_delay(self, text, state):
+        try:
+            details = predictionNLP(text[0])
 
-        #     self.declare(
-        #         FreeformTicket(
-        #             departing_from=params['dep_from'] or '',
-        #             departing_to=params['dep_to'] or '',
-        #             departure_date=params['dep_date'] or '',
-        #             departure_time=params['dep_time'] or '',
-        #             returning=params['returning'] or '',
-        #         ))
+            params = {
+                'dep_from': None,
+                'dep_to': None,
+                'dep_date': None,
+                'dep_time': None,
+                'prev_delay': None,
+            }
 
-        #     self.retract_input(text)
-        #     self.set_prev_state(state['status'])
-        #     self.modify(state, status='FREEFORM')
+            if (details['departing_from'] or details['departing_to']
+                    or details['previous_delay']):
+                dep_from = details['departing_from'] or None
+                dep_to = details['departing_to'] or None
+                dep_date = details['departure_date'] or None
+                dep_time = details['departure_time'] or None
+                prev_delay = details['previous_delay'] or None
+
+                if dep_from:
+                    params['dep_from'] = dep_from
+                if dep_to:
+                    params['dep_to'] = dep_to
+                if dep_date:
+                    params['dep_date'] = dep_date
+                if dep_time:
+                    params['dep_time'] = dep_time
+                if prev_delay:
+                    params['prev_delay'] = str(prev_delay)
+
+                self.declare(
+                    FreeformDelay(
+                        starting=params['dep_from'] or '',
+                        destination=params['dep_to'] or '',
+                        departure_date=params['dep_date'] or '',
+                        departure_time=params['dep_time'] or '',
+                        previous_delay=params['prev_delay'] or '',
+                    ))
+                self.retract_input(text)
+                self.set_prev_state(state['status'])
+                self.modify(state, status='FREEFORM')
+        except Exception as e:
+            self.state_message(str(e))
 
     # Ticket questioning
     @Rule(
@@ -109,11 +147,13 @@ class InputRules:
         if state['status'] == 'MODIFYING':
             # TODO: NLP to detect which parts to modify
             res = text[0].lower()
+            res = re.sub('[^a-zA-Z\s]', '', res)
+            res = re.sub('(\s\s+|\sand\s)', ' ', res)
 
-            b_dep_from = 'dep_from' in res
-            b_dep_to = 'dep_to' in res
-            b_dep_date = 'dep_date' in res
-            b_dep_time = 'dep_time' in res
+            b_dep_from = ('starting' in res or 'from' in res)
+            b_dep_to = ('destination' in res or 'departing to' in res)
+            b_dep_date = ('date' in res or 'when' in res)
+            b_dep_time = ('time' in res)
 
             self.declare(
                 ToModify(

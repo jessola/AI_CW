@@ -9,7 +9,7 @@ def ask_previous_delay(context=None):
         'How long have you been waiting for?',
         'How long has your train been delayed?',
         'What\'s the length of the delay?',
-        'How many minutes have you been delayed for?',
+        'How many minutes are you being delayed for?',
     ]
 
     # Check for context

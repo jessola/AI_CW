@@ -1,4 +1,5 @@
 from experta import *
+from datetime import datetime
 import re
 
 from .fact_types import *
@@ -15,6 +16,14 @@ freeform_topics = [
     'return_time',
 ]
 
+delay_freeform_topics = [
+    'starting',
+    'destination',
+    'departure_date',
+    'departure_time',
+    'previous_delay',
+]
+
 
 class FreeformStateRules:
     """Handles scenarios in which complex input is being provided by the user.
@@ -24,7 +33,7 @@ class FreeformStateRules:
     def make_multi_suggestions(self, state, params):
         try:
             for topic in freeform_topics:
-                if len(params[topic].strip()) > 0:
+                if len(params[topic].strip()) > 0 and topic in params.keys():
                     sug = suggest(params[topic], topic, self.context)
                     if sug and not self.just_suggested:
                         self.just_suggested = True
@@ -39,14 +48,14 @@ class FreeformStateRules:
 
             return False
         except Exception as e:
-            self.state_message(str(e))
+            print(str(e))
 
     # Check for errors
     def check_multi_errors(self, params, errors):
         error = None
 
         for topic in freeform_topics:
-            if len(params[topic].strip()) > 0:
+            if len(params[topic].strip()) > 0 and topic in params.keys():
                 error = validate(params[topic], topic, self.context)
 
             if error:
@@ -55,10 +64,20 @@ class FreeformStateRules:
     # Handles the dynamic declaration of facts
     def declare_multi_facts(self, params, errors):
         for topic in freeform_topics:
-            if len(params[topic].strip()) > 0 and topic not in errors:
+            if len(params[topic].strip()
+                   ) > 0 and topic not in errors and topic in params.keys():
                 new_fact = return_fact(topic, params[topic])
                 self.declare(new_fact)
                 self.mark_answered_ticket(topic)
+
+    # Handles the dynamic declaration of multiple delay facts
+    def declare_multi_delay_facts(self, params, errors):
+        for topic in delay_freeform_topics:
+            if ((len(params[topic].strip()) > 0) and topic not in errors
+                    and topic in params.keys()):
+                new_fact = return_fact(topic, params[topic])
+                self.declare(new_fact)
+                self.mark_answered_delay(topic)
 
     # Prepare error message
     def output_error_message(self, params, errors):
@@ -71,7 +90,7 @@ class FreeformStateRules:
 
             # Add each error string
             for topic in freeform_topics:
-                if topic in errors:
+                if topic in errors and topic in params.keys():
                     if topic in ['departing_from', 'departing_to']:
                         problems.append('where you\'re %s' %
                                         re.sub('_', ' ', topic))
@@ -117,6 +136,12 @@ class FreeformStateRules:
                 )) > 0 and 'departure_time' not in errors else None
             ret = params['returning'] if len(params['returning'].strip(
             )) > 0 and 'returning' not in errors else None
+            ret_date = params['return_date'] if len(
+                params['return_date'].strip(
+                )) > 0 and 'return_date' not in errors else None
+            ret_time = params['return_time'] if len(
+                params['return_time'].strip(
+                )) > 0 and 'return_time' not in errors else None
 
             # Departing to and from
             if dep_from and dep_to:
@@ -142,8 +167,8 @@ class FreeformStateRules:
             # Departure date and time
             if dep_date and dep_time:
                 _string = 'leave at %s on %s' % (
-                    dep_date,
-                    dep_time,
+                    datetime.strptime(dep_date, '%d%m%y').strftime('%D'),
+                    datetime.strptime(dep_time, '%H%M').strftime('%H:%M'),
                 )
                 if len(details) == 0:
                     _string = 'you want to ' + _string
@@ -152,7 +177,11 @@ class FreeformStateRules:
             elif dep_date or dep_time:
                 d = dep_date or dep_time
 
-                _string = 'leave on %s' % d if dep_date else 'leave at %s' % d
+                _string = 'leave on %s' % datetime.strptime(
+                    d, '%d%m%y').strftime(
+                        '%D'
+                    ) if dep_date else 'leave at %s' % datetime.strptime(
+                        d, '%H%M').strftime('%H:%M')
 
                 if len(details) == 0:
                     _string = 'you want to ' + _string
@@ -162,6 +191,30 @@ class FreeformStateRules:
             # Returning
             if ret:
                 _string = 'you want a return ticket'
+
+                details.append(_string)
+
+            # Return date and time
+            if ret_date and ret_time:
+                _string = 'leave at %s on %s' % (
+                    datetime.strptime(ret_date, '%d%m%y').strftime('%D'),
+                    datetime.strptime(ret_time, '%H%M').strftime('%H:%M'),
+                )
+                if len(details) == 0:
+                    _string = 'you want to ' + _string
+
+                details.append(_string)
+            elif ret_date or ret_time:
+                r = ret_date or ret_time
+
+                _string = 'return on %s' % datetime.strptime(
+                    r, '%d%m%y').strftime(
+                        '%D'
+                    ) if ret_date else 'return at %s' % datetime.strptime(
+                        r, '%H%M').strftime('%H:%M')
+
+                if len(details) == 0:
+                    _string = 'you want to ' + _string
 
                 details.append(_string)
 
@@ -175,7 +228,7 @@ class FreeformStateRules:
 
             return message
         except Exception as e:
-            self.state_message(str(e))
+            print(str(e))
 
     @Rule(
         AS.state << State(status='FREEFORM'),
@@ -201,13 +254,32 @@ class FreeformStateRules:
         try:
             self.declare_multi_facts(params, errors)
         except Exception as e:
-            print(str(e))
+            self.state_message(str(e))
 
         self.retract(params)
         self.state_message(self.output_confirmation(params, errors))
         self.prompt_message('Is this correct?')
 
         # self.modify(state, status=self.prev_state)
+
+    # Freeform delay
+    @Rule(
+        AS.state << State(status='FREEFORM'),
+        AS.params << FreeformDelay(),
+        Task('DELAY'),
+    )
+    def freeform_delay(self, state, params):
+        errors = []
+
+        try:
+            self.declare_multi_delay_facts(params, errors)
+
+            self.state_message('I see.')
+            self.modify(state, status=self.prev_state)
+        except Exception as e:
+            self.state_message(str(e))
+
+        self.retract(params)
 
     @Rule(AS.state << State(), AS.f << Fact(subject='accepted', value=W()))
     def wait_for_confirmation(self, state, f):

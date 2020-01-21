@@ -2,6 +2,7 @@ from .departing_to_from import validate_dep_to_from, suggest_dep_to_from, valida
 from .returning import validate_ret
 from .times import validate_time
 from .dates import validate_date
+from .previous_delay import validate_previous_delay
 
 
 def validate(value, option, context=None):
@@ -24,6 +25,10 @@ def validate(value, option, context=None):
     # Any times
     if option in ['departure_time', 'return_time']:
         return validate_time(value, context)
+
+    # Previous Delay
+    if option == 'previous_delay':
+        return validate_previous_delay(value, context)
 
     return None
 

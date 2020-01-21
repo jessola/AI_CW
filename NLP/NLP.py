@@ -164,5 +164,5 @@ def predictionNLP(input):
 
 print(
     predictionNLP(
-        "My train was going from Norwich to Ely and was delayed for 50 minutes can you tell me when ill reach my destination"
+        "My train was delayed for 50 minutes can you tell me when ill reach my destination"
     ))

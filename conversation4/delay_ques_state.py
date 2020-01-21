@@ -1,4 +1,5 @@
 from experta import *
+import re
 
 from questions import ask_question
 from validation import validate
@@ -34,6 +35,10 @@ class DelayQsStateRules:
     )
     def answered_delay_question(self, f, subject, val):
         self.retract(f)
+
+        # Previous delay
+        if subject == 'previous_delay':
+            val = re.sub('[^0-9]', '', val)
 
         # Validate
         error = validate(val, subject)

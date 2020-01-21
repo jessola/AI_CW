@@ -1,4 +1,5 @@
 from random import choice
+from datetime import datetime
 
 
 def ask_departing_from(context=None):

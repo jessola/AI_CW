@@ -65,9 +65,18 @@ class DelayConfRules:
             pred_str = str(pred_dict).replace("'", '"')
 
             self.state_message(pred_str)
+
+            self.reset()
+            self.restore()
+            self.prompt_message('Can I help you with anything else?')
         except Exception as e:
-            self.state_message(str(e))
-            self.retract([
-                f for f in self.facts.values() if isinstance(f, OtherStations)
-            ][0])
-            self.delay_questions.insert(0, 'other_stations')
+            print(str(e))
+            self.state_message(
+                'I\'m so sorry, but something seems to have gone wrong.')
+            # self.retract([
+            #     f for f in self.facts.values() if isinstance(f, OtherStations)
+            # ][0])
+            # self.delay_questions.insert(0, 'other_stations')
+            self.reset()
+            self.restore()
+            self.prompt_message('Can I help you with anything else?')

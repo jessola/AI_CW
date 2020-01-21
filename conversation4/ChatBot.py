@@ -50,8 +50,8 @@ class ChatBot(
         self.valid = False
         self.just_suggested = False
         self.prev_state = None
-        self.ticket_questions = questions_ticket
-        self.delay_questions = questions_delay
+        self.ticket_questions = [*questions_ticket]
+        self.delay_questions = [*questions_delay]
         self.__state_message = state_message or (lambda m: print(m))
         self.__prompt_message = prompt_message or (
             lambda m: self.listen(input(m)))
@@ -68,6 +68,11 @@ class ChatBot(
     @DefFacts()
     def initial_state(self):
         yield State(status='OPEN')
+
+    # Restore the original state
+    def restore(self):
+        self.ticket_questions = [*questions_ticket]
+        self.delay_questions = [*questions_delay]
 
     # Set the previous state, so bot can resume questioning after freeform input
     def set_prev_state(self, state):

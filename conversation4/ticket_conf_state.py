@@ -32,14 +32,17 @@ class TicketConfRules:
     def request_confirmation(self, state, dep_from, dep_to, dep_date, dep_time,
                              ret):
         self.modify(state, status='CONFIRMING')
-        self.prompt_message(
-            'So you want a %s ticket from %s to %s on %s at %s?' % (
-                'return' if ret is True else 'single',
-                dep_from,
-                dep_to,
-                dep_date,
-                dep_time,
-            ))
+        try:
+            self.prompt_message(
+                'So you want a %s ticket from %s to %s on %s at %s?' % (
+                    'return' if ret is True else 'single',
+                    dep_from,
+                    dep_to,
+                    datetime.strptime(dep_date, '%d%m%y').strftime('%D'),
+                    datetime.strptime(dep_time, '%H%M').strftime('%H:%M'),
+                ))
+        except Exception as e:
+            self.state_message(str(e))
 
     @Rule(AS.state << State(status='CONFIRMING'), Task('TICKET'),
           AS.f << Fact(subject='accepted', value=W()), ~Confirmed())
@@ -96,8 +99,15 @@ class TicketConfRules:
             # Format the ticket so it can be parsed to a JSON object
             ticket_obj = str(ticket_obj).replace("'", '"')
             self.state_message(ticket_obj)
+            self.reset()
+            self.restore()
+            self.prompt_message('Can I help you with anything else?')
+            # self.run()
         except Exception as e:
             print(str(e))
             self.state_message(
                 'Sorry, I couldn\'t find any tickets matching the criteria you specified.'
             )
+            self.reset()
+            self.restore()
+            self.prompt_message('Can I help you with anything else?')

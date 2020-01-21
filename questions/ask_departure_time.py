@@ -1,4 +1,5 @@
 from random import choice
+from datetime import datetime
 
 
 def ask_departure_time(context=None):
@@ -18,22 +19,25 @@ def ask_departure_time(context=None):
         # Check for dep_top and/or dep_date
         if dep_date and dep_to:
             options.append('What time on {} are you going to {}?'.format(
-                dep_date, dep_to))
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D'), dep_to))
             options.append('What time on {} do you want to go to {}?'.format(
-                dep_date, dep_to))
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D'), dep_to))
             options.append('When on {} do you want to go to {}?'.format(
-                dep_date, dep_to))
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D'), dep_to))
             options.append('When on {} are you going to {}?'.format(
-                dep_date, dep_to))
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D'), dep_to))
 
         if dep_to:
             options.append('What time do you want to go to {}?'.format(dep_to))
             options.append('When are you going to {}?'.format(dep_to))
 
         if dep_date:
-            options.append('When on {} are you leaving?'.format(dep_date))
-            options.append('What time on {} are you leaving?'.format(dep_date))
-            options.append('When on {} are you leaving?'.format(dep_date))
+            options.append('When on {} are you leaving?'.format(
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D'), ))
+            options.append('What time on {} are you leaving?'.format(
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D')))
+            options.append('When on {} are you leaving?'.format(
+                datetime.strptime(dep_date, '%d%m%y').strftime('%D')))
 
     # Select a random question.
     return choice(options)
