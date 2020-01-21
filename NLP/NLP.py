@@ -96,7 +96,7 @@ def inputNLP(input, returningInput = None):
     if (ticketdict.get("departure_time") == None) or (ticketdict.get("departure_date") == None):
         for token in doc:
             #try to find missed out departure times
-            if (returning == True and token.i < tokenReturning) or (returningInput == True) or (returning != True and returningInput != True) :
+            if (returning == True and token.i < tokenReturning) or (returning != True and returningInput != True) :
                 if (re.search('\d{,2}:\d{,2}', token.text) is not None):
                     if ent.start != 0:
                         prev_token1 = doc[ent.start - 1]
@@ -111,10 +111,9 @@ def inputNLP(input, returningInput = None):
                 if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None):
                     #add formatting for dd/mm/yy here
                     ticketdict.update({"departure_date": dateFormat2(token.text)})
-        
+
     #if there are missing values for return ticket when return is specified try to look
     if (ticketdict.get("return_date") == None) or (ticketdict.get("return_time") == None):
-        if (ticketdict.get("returning") == True) or returningInput == True:
             for token in doc:
                 #find the return time and aswell if missing
                 if (returning == True and token.i > tokenReturning) or returningInput == True:
@@ -208,4 +207,4 @@ def dateFormat2(input):
 
 
 
-print(inputNLP("I want a ticket on the 15/01/20 from Norwich to Cambridge arriving at 5:00pm and i want a return ticket for the 18/01 leaving at 14:00"))
+print(inputNLP("I want a ticket on the 15/01/20 from Norwich to Cambridge arriving at 5:00pm and i want a return ticket for the 18/01/20 leaving at 14:00"))
