@@ -2,7 +2,7 @@ from experta import *
 import re
 
 from questions import ask_question
-from validation import validate
+from validation import validate, suggest
 
 from .utilities import return_fact
 from .fact_types import *
@@ -42,6 +42,16 @@ class DelayQsStateRules:
                 val = re.sub('[^0-9]', '', val)
 
             # Validate
+            # Check for suggestions
+            sug = suggest(val, subject, self.context)
+            if sug:
+                self.just_suggested = True
+                self.state_message(sug['message'])
+                self.declare(Suggested(subject, sug['value'], sug['original']))
+                self.set_prev_state('QUESTIONING')
+                self.modify(state, status='SUGGESTING')
+                return
+
             error = validate(val, subject)
             if error:
                 self.state_message(error)
@@ -51,4 +61,4 @@ class DelayQsStateRules:
             self.declare(new_fact)
             self.mark_answered_delay(subject)
         except Exception as e:
-            self.state_message(str(e))
+            self.state_message('Sorry something went wrong.')

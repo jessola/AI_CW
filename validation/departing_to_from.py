@@ -1,4 +1,4 @@
-from railway.station import get_stations, get_station
+from railway.station import get_stations, get_station, find_most_similar
 
 # Valid stations for delay prediction
 valid_delay_stations = [
@@ -94,7 +94,18 @@ def suggest_dep_to_from(station, context=None):
     """
     suggested = None
 
+    # Real validation
+    poss = find_most_similar(station)
+    if poss and validate_dep_to_from(station):
+        suggested = {
+            'message': 'When you say "%s", do you mean %s?' % (station, poss),
+            'value': poss,
+            'original': station.lower(),
+        }
+        return suggested
+
     # TODO: proper spelling validation
+    # Hard coded special cases
     if station.lower() in ['noriwch', 'uea', 'norrich']:
         suggested = {
             'message': 'When you say "%s", do you mean Norwich?' % station,
