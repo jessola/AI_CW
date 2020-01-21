@@ -1,7 +1,6 @@
 import spacy
 from datetime import datetime
 from spacy.symbols import prep
-from autocorrect import Speller
 import re
 
 nlp = spacy.load('en_core_web_lg')
@@ -109,9 +108,9 @@ def inputNLP(input, returningInput = None):
                             ticketdict.update({"departure_condition": "dep"})
                             ticketdict.update({"departure_time": timeFormat(token.text)})
             #or try to find out missing date time       
-            if (re.search('\d{,2}/\d{,2}(?/\d{,2})', token.text) is not None):
+            if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None) and ((returning == True and token.i > tokenReturning) or returningInput == True):
                 #add formatting for dd/mm/yy here
-                ticketdict.update({"return_date": dateFormat2(token.text)})
+                ticketdict.update({"departure_date": dateFormat2(token.text)})
     
     #if there are missing values for return ticket when return is specified try to look
     if (ticketdict.get("returning") == True) and ((ticketdict.get("return_date") == None) or (ticketdict.get("return_time") == None)):
@@ -129,7 +128,7 @@ def inputNLP(input, returningInput = None):
                                 ticketdict.update({"return_condition": "dep"})  
                                 ticketdict.update({"return_time": timeFormat(token.text)})
 
-            if (re.search('\d{,2}/\d{,2}(/\d{,2})?', token.text) is not None):
+            if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None) and ((returning == True and token.i > tokenReturning) or returningInput == True):
                 ticketdict.update({"return_date": dateFormat2(token.text)})
 
     return ticketdict
