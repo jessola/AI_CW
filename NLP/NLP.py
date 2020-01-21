@@ -113,23 +113,24 @@ def inputNLP(input, returningInput = None):
                     ticketdict.update({"departure_date": dateFormat2(token.text)})
         
     #if there are missing values for return ticket when return is specified try to look
-    if (ticketdict.get("returning") == True) and ((ticketdict.get("return_date") == None) or (ticketdict.get("return_time") == None)):
-        for token in doc:
-            #find the return time and aswell if missing
-            if (returning == True and token.i > tokenReturning) or returningInput == True:
-                if (re.search('\d{,2}:\d{,2}', token.text) is not None):
-                    if ent.start != 0:
-                        prev_token1 = doc[ent.start - 1]
-                        prev_token2 = doc[ent.start - 2]
-                        if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
-                            ticketdict.update({"return_condition": "arr"})
-                            ticketdict.update({"return_time": timeFormat(token.text)})
-                        else:
-                            ticketdict.update({"return_condition": "dep"})  
-                            ticketdict.update({"return_time": timeFormat(token.text)})
+    if (ticketdict.get("return_date") == None) or (ticketdict.get("return_time") == None):
+        if (ticketdict.get("returning") == True) or returningInput == True:
+            for token in doc:
+                #find the return time and aswell if missing
+                if (returning == True and token.i > tokenReturning) or returningInput == True:
+                    if (re.search('\d{,2}:\d{,2}', token.text) is not None):
+                        if ent.start != 0:
+                            prev_token1 = doc[ent.start - 1]
+                            prev_token2 = doc[ent.start - 2]
+                            if  prev_token1.dep == prep and prev_token2.lemma_ in ("arrive", "there"):
+                                ticketdict.update({"return_condition": "arr"})
+                                ticketdict.update({"return_time": timeFormat(token.text)})
+                            else:
+                                ticketdict.update({"return_condition": "dep"})  
+                                ticketdict.update({"return_time": timeFormat(token.text)})
 
-                if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None):
-                    ticketdict.update({"return_date": dateFormat2(token.text)})
+                    if (re.search('\d{,2}/\d{,2}/\d{,2}', token.text) is not None):
+                        ticketdict.update({"return_date": dateFormat2(token.text)})
 
     return ticketdict
 
