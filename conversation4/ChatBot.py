@@ -27,8 +27,8 @@ questions_delay = [
     'starting',
     'destination',
     'other_stations',
-    'departure_date',
-    'departure_time',
+    # 'departure_date',
+    # 'departure_time',
     'previous_delay',
 ]
 
@@ -49,6 +49,7 @@ class ChatBot(
         super().__init__()
         self.valid = False
         self.just_suggested = False
+        self.just_set_true = False
         self.prev_state = None
         self.ticket_questions = [*questions_ticket]
         self.delay_questions = [*questions_delay]

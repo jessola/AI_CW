@@ -27,7 +27,10 @@ class InputRules:
     # Check for free form input
     @Rule(AS.text << Input(), AS.state << State(), ~Task('DELAY'), salience=1)
     def check_for_freeform(self, text, state):
-        details = inputNLP(text[0])
+        print(self.context['returning'])
+        details = inputNLP(
+            text[0], True if
+            (self.context['returning'] and not self.just_set_true) else None)
 
         params = {
             'dep_from': None,
@@ -40,14 +43,14 @@ class InputRules:
         }
 
         if (details['departing_from'] or details['departing_to']
-                or details['departure_date'] or details['departure_time']
-                or details['returning'] or details['return_date']
-                or details['return_time']):
+                or details['returning']):
             dep_from = details['departing_from'] or None
             dep_to = details['departing_to'] or None
             dep_date = details['departure_date'] or None
             dep_time = details['departure_time'] or None
-            ret = details['returning'] or None
+            ret = details['returning'] or False
+            if ret:
+                self.just_set_true = True
             ret_date = details['return_date'] or None
             ret_time = details['return_time'] or None
 
@@ -60,7 +63,7 @@ class InputRules:
             if dep_time:
                 params['dep_time'] = dep_time
             if ret:
-                params['ret'] = 'yes' if ret else 'no'
+                params['ret'] = "yes" if ret == True else "no"
             if ret_date:
                 params['ret_date'] = ret_date
             if ret_time:

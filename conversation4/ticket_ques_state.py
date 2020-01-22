@@ -22,6 +22,7 @@ class TicketQsStateRules:
               ~DepartureTime(),
               ~Returning(),
               ~ReturnDate(),
+              ~ReturnTime(),
           ))
     def more_info_required(self):
         if self.valid:
@@ -55,13 +56,13 @@ class TicketQsStateRules:
         except Exception as e:
             print(str(e))
 
-        # When dealing with times
-        try:
-            if subject in ['departure_time', 'return_time']:
-                actual_time = dateFormat2(val)
-                val = actual_time
-        except Exception as e:
-            print(str(e))
+        # # When dealing with times
+        # try:
+        #     if subject in ['departure_time', 'return_time']:
+        #         actual_time = timeFormat(val)
+        #         val = actual_time
+        # except Exception as e:
+        #     print(str(e))
 
         # Check for suggestions
         sug = suggest(val, subject, self.context)

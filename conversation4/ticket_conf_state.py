@@ -30,7 +30,7 @@ class TicketConfRules:
         ~Confirmed(),
     )
     def request_confirmation(self, state, dep_from, dep_to, dep_date, dep_time,
-                             ret):
+                             ret, ret_date, ret_time):
         self.modify(state, status='CONFIRMING')
         try:
             self.prompt_message(

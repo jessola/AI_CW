@@ -86,6 +86,6 @@ class OtherStations(Fact):
 class FreeformDelay(Fact):
     starting = Field(str, default='')
     destination = Field(str, default='')
-    departure_date = Field(str, default='')
-    departure_time = Field(str, default='')
+    # departure_date = Field(str, default='')
+    # departure_time = Field(str, default='')
     previous_delay = Field(str, default='')

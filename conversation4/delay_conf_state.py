@@ -15,28 +15,29 @@ class DelayConfRules:
   """
 
     # There is sufficient information
-    @Rule(AS.state << State(status='QUESTIONING'), Task('DELAY'),
-          AND(
-              DepartingFrom(MATCH.start),
-              DepartingTo(MATCH.dest),
-              OtherStations(MATCH.other),
-              DepartureDate(MATCH.dep_date),
-              DepartureTime(MATCH.dep_time),
-              PreviousDelay(MATCH.prev_delay),
-          ))
+    @Rule(
+        AS.state << State(status='QUESTIONING'),
+        Task('DELAY'),
+        AND(
+            DepartingFrom(MATCH.start),
+            DepartingTo(MATCH.dest),
+            OtherStations(MATCH.other),
+            #   DepartureDate(MATCH.dep_date),
+            #   DepartureTime(MATCH.dep_time),
+            PreviousDelay(MATCH.prev_delay),
+        ))
     def predict_delay(
         self,
         state,
         start,
         dest,
         other,
-        dep_date,
-        dep_time,
         prev_delay,
     ):
         try:
             # Travel Date
-            start_date = datetime.strptime(dep_date + dep_time, '%d%m%y%H%M')
+            # start_date = datetime.strptime(dep_date + dep_time, '%d%m%y%H%M')
+            start_date = datetime.now()
 
             # Get the information about the stations user is going through
             other = re.sub('[^a-zA-Z\s]', '', other)

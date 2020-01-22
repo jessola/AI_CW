@@ -264,8 +264,17 @@ class FreeformStateRules:
         self.retract(params)
         output_message = self.output_confirmation(params, errors)
 
-        if not output_message:
-            self.modify(state, self.prev_state or 'QUESTIONING')
+        try:
+            if not output_message:
+                self.modify(state, status='QUESTIONING')
+                return
+            # return
+            # pass
+            # pass
+        except Exception as e:
+            self.state_message('Something has gone wrong, I\'m afraid')
+            self.reset()
+            self.restore()
             return
 
         self.state_message(output_message)
