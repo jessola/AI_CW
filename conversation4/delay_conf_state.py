@@ -15,17 +15,13 @@ class DelayConfRules:
   """
 
     # There is sufficient information
-    @Rule(
-        AS.state << State(status='QUESTIONING'),
-        Task('DELAY'),
-        AND(
-            DepartingFrom(MATCH.start),
-            DepartingTo(MATCH.dest),
-            OtherStations(MATCH.other),
-            #   DepartureDate(MATCH.dep_date),
-            #   DepartureTime(MATCH.dep_time),
-            PreviousDelay(MATCH.prev_delay),
-        ))
+    @Rule(AS.state << State(status='QUESTIONING'), Task('DELAY'),
+          AND(
+              DepartingFrom(MATCH.start),
+              DepartingTo(MATCH.dest),
+              OtherStations(MATCH.other),
+              PreviousDelay(MATCH.prev_delay),
+          ))
     def predict_delay(
         self,
         state,
@@ -74,10 +70,7 @@ class DelayConfRules:
             print(str(e))
             self.state_message(
                 'I\'m so sorry, but something seems to have gone wrong.')
-            # self.retract([
-            #     f for f in self.facts.values() if isinstance(f, OtherStations)
-            # ][0])
-            # self.delay_questions.insert(0, 'other_stations')
+
             self.reset()
             self.restore()
             self.prompt_message('Can I help you with anything else?')

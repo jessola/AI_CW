@@ -27,8 +27,6 @@ questions_delay = [
     'starting',
     'destination',
     'other_stations',
-    # 'departure_date',
-    # 'departure_time',
     'previous_delay',
 ]
 
@@ -116,9 +114,9 @@ class ChatBot(
                 self.delay_questions.remove(topic)
 
 
-if __name__ == '__main__':
-    c = ChatBot()
-    c.reset()
-    c.run()
-    # while c.has_ticket_qs:
-    #     print(c.next_ticket_q())
+# if __name__ == '__main__':
+#     c = ChatBot()
+#     c.reset()
+#     c.run()
+#     # while c.has_ticket_qs:
+#     #     print(c.next_ticket_q())

@@ -10,7 +10,7 @@ conn = hive.Connection(
 
 cursor = conn.cursor()
 
-# cursor.execute('SHOW TABLES')
+cursor.execute('SHOW TABLES')
 
 for table in cursor.fetchall():
     print(table)

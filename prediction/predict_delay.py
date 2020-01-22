@@ -9,10 +9,10 @@ IS_WEEKDAY = lambda d: 1 if d.weekday() > 4 else 0
 
 
 def predict_delay(delay_from_prev, start, end, date):
-    """Predict the delay based on a train journey from one station to another,
-  accounting for the delay from the previous station and whether the journey
-  is on a weekday or not.
-  
+    """EXPERIMENTAL: Predict the delay based on a train journey from one station
+    to another, accounting for the delay from the previous station and whether 
+    the journey is on a weekday or not.
+
   Arguments:
       delay_from_prev {int} -- Delay from previous station.
       start {str} -- Starting point.

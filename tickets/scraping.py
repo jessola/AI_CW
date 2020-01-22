@@ -14,13 +14,15 @@ def format_output(name):
     return re.sub('(\s{2,})|\[|\]', '', name)
 
 
-def find_cheapest_ticket(dep_from,
-                         dep_to,
-                         dep_date={
-                             'condition': 'dep',
-                             'date': datetime.now()
-                         },
-                         ret_date=None):
+def find_cheapest_ticket(
+    dep_from,
+    dep_to,
+    dep_date={
+        'condition': 'dep',
+        'date': datetime.now()
+    },
+    ret_date=None,
+):
     """Finds the cheapest train ticket for a specified journey.
       
       Arguments:
@@ -73,7 +75,6 @@ def find_cheapest_ticket(dep_from,
         output_price = (
             soup.select_one('label.opreturn span.label-text').next_element)
     else:
-        # output_price = soup.select_one('label.opsingle').next_element.next_element.next_element
         output_price = re.sub(
             '([a-zA-Z]|\s)', '',
             soup.select_one('#buyCheapestButton span').next_element)
@@ -89,8 +90,3 @@ def find_cheapest_ticket(dep_from,
         'ticket_url': 'none',
         # 'returning': True if ret_date else False
     }
-
-
-# print(find_cheapest_ticket(
-#         "norwich", "stevenage", {'date':datetime(2019, 12, 12), 'condition': 'dep'}, {'date':datetime(2019, 12, 13), 'condition': 'arr'}
-#     ))
