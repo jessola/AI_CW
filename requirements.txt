@@ -14,7 +14,7 @@ cymem==2.0.3
 dnspython==1.16.0
 durable-rules==2.0.14
 en-core-web-lg==2.2.5
-eventlet==0.25.1
+eventlet==0.31.0
 experta==1.9.4
 Flask==1.1.1
 Flask-SocketIO==2.3
