@@ -34,7 +34,7 @@ monotonic==1.5
 more-itertools==8.1.0
 murmurhash==1.0.2
 ndg-httpsclient==0.5.1
-numpy==1.18.0
+numpy==1.22.0
 pandas==0.25.3
 pathspec==0.6.0
 plac==1.1.3
